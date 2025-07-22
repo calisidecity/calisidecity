@@ -1,4 +1,4 @@
-          <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -571,14 +571,14 @@
   // Load cart from localStorage per user
   function loadCart() {
     if(!currentUser) return;
-    cart = JSON.parse(localStorage.getItem(csc_rp_cart_${currentUser}) || '{}');
+    cart = JSON.parse(localStorage.getItem(`csc_rp_cart_${currentUser}`) || '{}');
     updateCartUI();
   }
 
   // Save cart to localStorage per user
   function saveCart() {
     if(!currentUser) return;
-    localStorage.setItem(csc_rp_cart_${currentUser}, JSON.stringify(cart));
+    localStorage.setItem(`csc_rp_cart_${currentUser}`, JSON.stringify(cart));
   }
 
   // Update cart icon count and popup content
@@ -598,16 +598,16 @@
         total += qty * product.price;
 
         let itemDiv = document.createElement('div');
-        itemDiv.textContent = ${product.name} x${qty};
+        itemDiv.textContent = `${product.name} x${qty}`;
         let priceSpan = document.createElement('span');
-        priceSpan.textContent = $${(qty * product.price).toFixed(2)};
+        priceSpan.textContent = `$${(qty * product.price).toFixed(2)}`;
         itemDiv.appendChild(priceSpan);
         cartItemsDiv.appendChild(itemDiv);
       }
       checkoutBtn.disabled = false;
     }
     cartCountSpan.textContent = count;
-    cartTotalDiv.textContent = Total: $${total.toFixed(2)};
+    cartTotalDiv.textContent = `Total: $${total.toFixed(2)}`;
   }
 
   // Toggle cart popup
@@ -734,4 +734,4 @@
   }
 </script>
 </body>
-</html>     
+</html>
