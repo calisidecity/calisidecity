@@ -485,4 +485,230 @@
     loginSection.style.display = 'block';
     dashboardSection.style.display = 'none';
     cart.length = 0;
-    total =
+    total = 0;
+    promoApplied = false;
+    promoMessage.textContent = '';
+    updateCartUI();
+  }
+  loginBtn.addEventListener('click', () => {
+    const name = usernameInput.value.trim();
+    if(name.length < 3) {
+      alert('Username must be at least 3 characters.');
+      return;
+    }
+    localStorage.setItem('csc_rp_user', name);
+    currentUser = name;
+    showDashboard();
+  });
+  logoutBtn.addEventListener('click', logout);
+  loadUser();
+
+  // --- Products ---
+  const products = [
+    { id: 1, name: '1M Coins', price: 15, desc: 'Buy big stacks for your grind. Delivered instantly.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
+    { id: 2, name: 'Glock Drum w/ Switch + Beam', price: 10, desc: 'Upgrade your street loadout. No cap.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
+    { id: 3, name: 'Blue Glock w/ Switch (2 pcs + 10k Ammo)', price: 5, desc: 'Clean & custom for your RP grind.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
+  ];
+
+  // --- Cart ---
+  let cart = [];
+  let total = 0;
+  let promoApplied = false;
+
+  const cartItems = document.getElementById('cart-items');
+  const totalDisplay = document.getElementById('total');
+  const checkoutBtn = document.getElementById('checkout-btn');
+  const promoCodeInput = document.getElementById('promo-code-input');
+  const applyPromoBtn = document.getElementById('apply-promo-btn');
+  const promoMessage = document.getElementById('promo-message');
+  const orderResult = document.getElementById('order-result');
+
+  // Products buttons disabled due to stock 0
+  function updateProductsUI() {
+    const productCards = document.querySelectorAll('.card');
+    products.forEach((product, i) => {
+      const btn = productCards[i].querySelector('button');
+      const stockSpan = productCards[i].querySelector('.out-of-stock');
+      if (product.stock > 0) {
+        btn.disabled = false;
+        btn.classList.add('enabled');
+        stockSpan.style.display = 'none';
+      } else {
+        btn.disabled = true;
+        btn.classList.remove('enabled');
+        stockSpan.style.display = 'block';
+      }
+    });
+  }
+  updateProductsUI();
+
+  function updateCartUI() {
+    if (cart.length === 0) {
+      cartItems.textContent = 'No items yet.';
+      totalDisplay.textContent = `Total: $0`;
+      checkoutBtn.disabled = true;
+    } else {
+      cartItems.innerHTML = '';
+      cart.forEach(item => {
+        const div = document.createElement('div');
+        div.textContent = `${item.name} x${item.qty}`;
+        const priceSpan = document.createElement('span');
+        priceSpan.textContent = `$${(item.price * item.qty).toFixed(2)}`;
+        div.appendChild(priceSpan);
+        cartItems.appendChild(div);
+      });
+      totalDisplay.textContent = `Total: $${total.toFixed(2)}`;
+      checkoutBtn.disabled = false;
+    }
+  }
+
+  // For demo all buttons disabled (stock 0), so no add to cart event listeners here
+
+  // --- Promo Codes ---
+  const validPromoCodes = {
+    'FOMO15': 0.15,  // 15% discount
+    'CSRP5': 0.05    // 5% discount
+  };
+
+  applyPromoBtn.addEventListener('click', () => {
+    const code = promoCodeInput.value.trim().toUpperCase();
+    if(!code) {
+      promoMessage.textContent = 'Please enter a promo code.';
+      return;
+    }
+    if(!validPromoCodes.hasOwnProperty(code)) {
+      promoMessage.textContent = 'Invalid promo code.';
+      return;
+    }
+    if(promoApplied) {
+      promoMessage.textContent = 'Promo code already applied.';
+      return;
+    }
+    const discount = validPromoCodes[code];
+    total = total * (1 - discount);
+    promoApplied = true;
+    updateCartUI();
+    promoMessage.textContent = `Promo applied! You saved ${(discount*100).toFixed(0)}%. New total: $${total.toFixed(2)}`;
+  });
+
+  // --- Checkout ---
+  checkoutBtn.addEventListener('click', () => {
+    if(cart.length === 0) return;
+
+    // Save order in localStorage per user
+    let orders = JSON.parse(localStorage.getItem(`csc_rp_orders_${currentUser}`)) || [];
+    const orderId = 'CSRP' + Math.floor(100000 + Math.random() * 900000);
+    const order = {
+      id: orderId,
+      items: [...cart],
+      total: total.toFixed(2),
+      date: new Date().toISOString()
+    };
+    orders.push(order);
+    localStorage.setItem(`csc_rp_orders_${currentUser}`, JSON.stringify(orders));
+    cart = [];
+    total = 0;
+    promoApplied = false;
+    promoCodeInput.value = '';
+    promoMessage.textContent = '';
+    updateCartUI();
+    updateOrderHistory();
+
+    // Show modal with order ID & Discord link
+    document.getElementById('modal-order-id').textContent = orderId;
+    document.getElementById('modal-overlay').style.display = 'flex';
+  });
+
+  function closeModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+  }
+
+  window.closeModal = closeModal;
+
+  // --- Order History in Dashboard ---
+  function updateOrderHistory() {
+    let orders = JSON.parse(localStorage.getItem(`csc_rp_orders_${currentUser}`)) || [];
+    const dashboardSectionEl = document.getElementById('dashboard-section');
+    // Remove old order history if any
+    let oldOrderDiv = document.getElementById('order-history');
+    if (oldOrderDiv) oldOrderDiv.remove();
+
+    const orderDiv = document.createElement('div');
+    orderDiv.id = 'order-history';
+    orderDiv.style.marginTop = '20px';
+    orderDiv.style.background = 'rgba(0,123,255,0.1)';
+    orderDiv.style.padding = '15px 20px';
+    orderDiv.style.borderRadius = '12px';
+    orderDiv.style.color = '#00aaff';
+    orderDiv.style.maxHeight = '200px';
+    orderDiv.style.overflowY = 'auto';
+
+    if (orders.length === 0) {
+      orderDiv.textContent = 'No orders yet.';
+    } else {
+      const h3 = document.createElement('h3');
+      h3.textContent = '📦 Your Orders';
+      h3.style.marginTop = '0';
+      h3.style.marginBottom = '10px';
+      orderDiv.appendChild(h3);
+
+      orders.slice().reverse().forEach(order => {
+        const o = document.createElement('div');
+        o.style.borderBottom = '1px solid #007bff33';
+        o.style.paddingBottom = '8px';
+        o.style.marginBottom = '8px';
+
+        let itemsList = order.items.map(i => `${i.name} x${i.qty}`).join(', ');
+        o.innerHTML = `<strong>ID:</strong> ${order.id} <br/>
+          <strong>Date:</strong> ${new Date(order.date).toLocaleString()} <br/>
+          <strong>Items:</strong> ${itemsList} <br/>
+          <strong>Total:</strong> $${order.total}`;
+        orderDiv.appendChild(o);
+      });
+    }
+    dashboardSectionEl.appendChild(orderDiv);
+  }
+
+  // --- Testimonials ---
+  const testimonialText = document.getElementById('testimonial-text');
+  const testimonialSubmit = document.getElementById('testimonial-submit');
+  const testimonialsList = document.getElementById('testimonials-list');
+
+  function loadTestimonials() {
+    let testimonials = JSON.parse(localStorage.getItem('csc_rp_testimonials')) || [];
+    testimonialsList.innerHTML = '';
+    if(testimonials.length === 0) {
+      testimonialsList.textContent = 'No testimonials yet. Be the first!';
+      return;
+    }
+    testimonials.forEach(t => {
+      const div = document.createElement('div');
+      div.textContent = `“${t.text}” — ${t.user}`;
+      testimonialsList.appendChild(div);
+    });
+  }
+
+  testimonialSubmit.addEventListener('click', () => {
+    if(!currentUser) {
+      alert('Please login to submit a testimonial.');
+      return;
+    }
+    let text = testimonialText.value.trim();
+    if(text.length < 10) {
+      alert('Testimonial must be at least 10 characters.');
+      return;
+    }
+    let testimonials = JSON.parse(localStorage.getItem('csc_rp_testimonials')) || [];
+    testimonials.push({ user: currentUser, text });
+    localStorage.setItem('csc_rp_testimonials', JSON.stringify(testimonials));
+    testimonialText.value = '';
+    loadTestimonials();
+    alert('Thank you for your testimonial!');
+  });
+
+  loadTestimonials();
+
+</script>
+
+</body>
+</html>
