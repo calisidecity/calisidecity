@@ -1,107 +1,482 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CaliSide City RP Store</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: url('https://i.imgur.com/GZNrBbW.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CaliSide City RP Store with Login & Preview</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('https://i.imgur.com/GZNrBbW.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #f0f0f0;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(15,15,15,0.85);
+    z-index: 0;
+  }
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+    transition: filter 0.5s ease;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  header h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    text-shadow: 0 0 8px #007bffaa;
+  }
+  header p {
+    font-size: 1.2rem;
+    color: #bbb;
+  }
+  /* Blur overlay for locked view */
+  #blur-overlay {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #00aaff;
+    padding: 20px;
+    text-align: center;
+  }
+  #blur-overlay h2 {
+    font-size: 2.8rem;
+    margin-bottom: 18px;
+  }
+  #blur-overlay input {
+    width: 280px;
+    max-width: 90vw;
+    padding: 14px 18px;
+    margin: 8px 0;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+  }
+  #blur-overlay button {
+    width: 300px;
+    max-width: 90vw;
+    margin-top: 15px;
+    background: #00aaff;
+    border: none;
+    padding: 16px 0;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  #blur-overlay button:hover {
+    background: #008fcc;
+  }
+  #blur-message {
+    color: #ff5555;
+    margin-top: 8px;
+    font-weight: 700;
+    min-height: 1.2rem;
+  }
+  /* Login/Register */
+  #dashboard-section {
+    max-width: 940px;
+    margin: 0 auto 40px;
+    background: rgba(30,30,30,0.9);
+    padding: 28px 30px;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    display: none;
+  }
+  #dashboard-section h2 {
+    color: #00aaff;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  #logout-btn {
+    display: block;
+    margin: 0 auto 20px auto;
+    background: #cc0000;
+    border: none;
+    padding: 14px 0;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 180px;
+  }
+  #logout-btn:hover {
+    background: #990000;
+  }
+  /* Products grid */
+  #search-bar {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 25px auto;
+    display: block;
+    padding: 12px 16px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: rgba(30,30,30,0.9);
+    color: #f0f0f0;
+    box-shadow: 0 0 10px #007bffaa;
+    transition: box-shadow 0.3s ease;
+  }
+  #search-bar:focus {
+    box-shadow: 0 0 15px #00aaffcc;
+  }
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px;
+    margin-bottom: 40px;
+  }
+  .card {
+    background: rgba(30,30,30,0.85);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+  }
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(0,123,255,0.7);
+  }
+  .card img {
+    max-height: 160px;
+    object-fit: contain;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    background: #111;
+    padding: 10px;
+  }
+  .card h2 {
+    font-size: 1.5rem;
+    margin: 0 0 12px;
+    font-weight: 700;
+    color: #00aaff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card p {
+    flex-grow: 1;
+    color: #ccc;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .out-of-stock {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #cc0000cc;
+    color: white;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    pointer-events: none;
+    user-select: none;
+    box-shadow: 0 0 10px #cc0000bb;
+  }
+  .buy-button {
+    background: #555;
+    border: none;
+    padding: 14px 0;
+    border-radius: 8px;
+    color: #bbb;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: not-allowed;
+  }
+  .buy-button.enabled {
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  .buy-button.enabled:hover {
+    background: #005fbb;
+  }
+  /* Cart icon */
+  #cart-icon {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #007bffcc;
+    padding: 10px 14px;
+    border-radius: 30px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 10px #007bffaa;
+  }
+  #cart-count {
+    background: #ff4444;
+    border-radius: 50%;
+    padding: 4px 9px;
+    font-size: 1rem;
+    color: white;
+    font-weight: 900;
+    user-select: none;
+  }
+  /* Cart popup */
+  #cart-popup {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 320px;
+    max-height: 420px;
+    background: rgba(20,20,20,0.95);
+    border-radius: 14px;
+    box-shadow: 0 0 30px #007bffaa;
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 350;
+    display: none;
+    flex-direction: column;
+  }
+  #cart-popup h3 {
+    color: #00aaff;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  #cart-items {
+    flex-grow: 1;
+    overflow-y: auto;
+    color: #ddd;
+    font-size: 1.1rem;
+  }
+  #cart-items div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  #cart-total {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-top: 14px;
+    text-align: right;
+    color: #00d8ff;
+  }
+  #checkout-btn-popup {
+    margin-top: 20px;
+    background: #007bff;
+    border: none;
+    padding: 14px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  #checkout-btn-popup:disabled {
+    background: #555;
+    color: #bbb;
+    cursor: not-allowed;
+  }
+  #checkout-btn-popup:hover:not(:disabled) {
+    background: #005fbb;
+  }
+  /* Modal */
+  #modal-overlay {
+    display:none;
+    position:fixed;
+    z-index:400;
+    left:0; top:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(4px);
+    align-items:center;
+    justify-content:center;
+  }
+  #modal {
+    background:#222;
+    padding:32px 28px;
+    border-radius:16px;
+    box-shadow:0 0 30px #00aaffaa;
+    max-width:400px;
+    color:#0ff;
+    text-align:center;
+  }
+  #modal h2 {
+    margin-top:0;
+    margin-bottom:16px;
+    font-size:2rem;
+    color:#00ccff;
+  }
+  #modal p {
+    font-size:1.2rem;
+    margin-bottom:24px;
+  }
+  #modal button {
+    background:#00aaff;
+    border:none;
+    padding:12px 24px;
+    border-radius:12px;
+    font-weight:700;
+    font-size:1.1rem;
+    color:white;
+    cursor:pointer;
+    transition:background 0.3s ease;
+  }
+  #modal button:hover {
+    background:#008fcc;
+  }
+  footer {
+    margin-top: 60px;
+    padding: 20px;
+    text-align: center;
+    font-size: 1rem;
+    color: #00aaff;
+    letter-spacing: 1.2px;
+  }
+  footer a {
+    color: #00aaff;
+    text-decoration: underline;
+    font-weight: 700;
+  }
+  /* Scrollbars */
+  #cart-items::-webkit-scrollbar {
+    width: 8px;
+  }
+  #cart-items::-webkit-scrollbar-track {
+    background: #111;
+  }
+  #cart-items::-webkit-scrollbar-thumb {
+    background: #007bffaa;
+    border-radius: 6px;
+  }
+  /* Responsive */
+  @media (max-width: 480px) {
+    header h1 {
+      font-size: 2.4rem;
     }
-    header {
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      text-align: center;
-      font-size: 24px;
+    #dashboard-section {
+      max-width: 90vw;
     }
-    a {
-      color: #00bfff;
-      text-decoration: underline;
+    #cart-popup {
+      width: 90vw;
+      right: 5vw;
     }
-    .store {
-      padding: 20px;
-      backdrop-filter: blur(8px);
-    }
-    .item {
-      border: 1px solid white;
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 10px;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-    .item img {
-      max-width: 100px;
-      border-radius: 8px;
-    }
-    .search-bar {
-      margin: 10px 0;
-      padding: 10px;
-      width: 100%;
-      max-width: 400px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-    }
-    .hidden { display: none; }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <header>
-    2025 CaliSide City RP — <a href="https://discord.gg/FkqyasFRAs" target="_blank">Join our Discord</a>
-  </header>
+  <div id="app" aria-live="polite">
 
-  <div class="store">
-    <input type="text" id="search" class="search-bar" placeholder="Search items..." />
-    <div id="items"></div>
-  </div>
+    <header>
+      <h1>🛒 CaliSide City RP Store</h1>
+      <p>🔥 All items currently out of stock — stay tuned for restocks!</p>
+    </header>
 
-  <script>
-    // RESET all stored users and logins
-    localStorage.clear();
+    <!-- User Dashboard -->
+    <section id="dashboard-section" aria-label="User Dashboard">
+      <h2>Welcome, <span id="user-display"></span>!</h2>
+      <button id="logout-btn">Logout</button>
+    </section>
 
-    const storeItems = [
-      { name: "1M Coins", price: "$15", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-      { name: "Glock Drum w/ Switch & Beam", price: "$10", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-      { name: "Standard Blue Glock", price: "$5", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-      { name: "Custom Drug Pack (4pc)", price: "$30", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-      { name: "Custom Clothing", price: "$15", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-      { name: "Personal Gun", price: "$50", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-      { name: "5K Coins", price: "$50", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-      { name: "4K Coins", price: "$40", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-      { name: "3K Coins", price: "$30", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-      { name: "2K Coins", price: "$20", stock: 0, img: "https://i.imgur.com/GZNrBbW.jpg" },
-    ];
+    <!-- Search bar -->
+    <input
+      type="search"
+      id="search-bar"
+      placeholder="Search items..."
+      aria-label="Search products"
+    />
 
-    const container = document.getElementById('items');
+    <!-- Products -->
+    <section class="products" aria-label="Products for sale">
 
-    function renderItems(items) {
-      container.innerHTML = '';
-      items.forEach(item => {
-        const el = document.createElement('div');
-        el.className = 'item';
-        el.innerHTML = `
-          <h3>${item.name}</h3>
-          <img src="${item.img}" />
-          <p>Price: ${item.price}</p>
-          <p>Status: ${item.stock === 0 ? 'Out of Stock' : 'In Stock'}</p>
-          <button ${item.stock === 0 ? 'disabled' : ''}>Add to Cart</button>
-        `;
-        container.appendChild(el);
-      });
-    }
+      <div class="card" data-name="1,000 Coins">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="1,000 Coins" />
+        <h2>💰 1,000 Coins – $10</h2>
+        <p>Buy big stacks for your grind. Delivered instantly.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
 
-    renderItems(storeItems);
+      <div class="card" data-name="Glock Drum w/ Switch + Beam">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Glock Drum" />
+        <h2>🔫 Glock Drum w/ Switch + Beam – $10</h2>
+        <p>Upgrade your street loadout. No cap.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
 
-    // Search filter
-    document.getElementById('search').addEventListener('input', (e) => {
-      const val = e.target.value.toLowerCase();
-      const filtered = storeItems.filter(i => i.name.toLowerCase().includes(val));
-      renderItems(filtered);
-    });
-  </script>
-</body>
-</html>
+      <div class="card" data-name="Blue Glock w/ Switch (2 pcs + 10k Ammo)">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Blue Glock" />
+        <h2>🔵 Blue Glock w/ Switch (2 pcs + 10k Ammo) – $5</h2>
+        <p>Clean & custom for your RP grind.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
+
+      <div class="card" data-name="Custom Drug">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Custom Drug" />
+        <h2>💊 Custom Drug – $30</h2>
+        <p>Create your own custom drug to sell or use in RP.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
+
+      <div class="card" data-name="4 Piece Custom Clothing">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="4 Piece Custom Clothing" />
+        <h2>👕 4 Piece Custom Clothing – $15</h2>
+        <p>Get unique clothes made for your style.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
+
+      <div class="card" data-name="Custom Personal Gun">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Custom Personal Gun" />
+        <h2>🔫 Custom Personal Gun – $50</h2>
+        <p>Your personal custom gun, designed by you.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
+
+      <div class="card" data-name="5,000 Coins">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="5,000 Coins" />
+        <h2>💰 5,000 Coins – $50</h2>
+        <p>Big coin bundle for serious grinders.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
+
+      <div class="card" data-name="4,000 Coins">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="4,000 Coins"
+
