@@ -1,71 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CaliSide City RP Shop</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('https://imgur.com/GZNrBbW.png') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+    }
+    .overlay {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+    }
+    .header, .product, .order-history {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(30, 30, 30, 0.9);
+      border-radius: 8px;
+    }
+    .product {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stock {
+      font-weight: bold;
+    }
+    .in-stock {
+      color: lightgreen;
+    }
+    .out-stock {
+      color: red;
+    }
+    .order-history table {
+      width: 100%;
+      border-collapse: collapse;
+      color: white;
+    }
+    .order-history th, .order-history td {
+      padding: 10px;
+      border: 1px solid #444;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>🛒 CaliSide City RP Shop</h1>
-    <p>Official Store — Everything RP 💼💰</p>
-  </header>
+  <div class="overlay">
+    <div class="header">
+      <h1>🛒 CaliSide City RP Shop</h1>
+      <p>🧾 Buy in-game items and send your Order ID to our Discord: <a href="https://discord.gg/FkqyasFRAs" style="color:#00aaff">discord.gg/FkqyasFRAs</a></p>
+    </div>
 
-  <main>
-    <section class="product">
-      <img src="https://imgur.com/GZNrBbW.png" alt="Blue Glock Switch" />
-      <h2>🔫 Blue Glock Switch x2 + 10k Ammo</h2>
-      <p>$10.00</p>
-      <button disabled>Out of Stock</button>
-    </section>
+    <div class="product">
+      <div>
+        <h2>🔫 Glock Drum w/ Switch & Beam</h2>
+        <p>$10</p>
+        <p class="stock out-stock">Out of Stock</p>
+      </div>
+      <img src="https://imgur.com/GZNrBbW.png" alt="Glock" width="100">
+    </div>
 
-    <section class="product">
-      <img src="https://imgur.com/GZNrBbW.png" alt="Standard Blue Glock" />
-      <h2>🔵 Standard Blue Glock</h2>
-      <p>$5.00</p>
-      <button disabled>Out of Stock</button>
-    </section>
+    <div class="product">
+      <div>
+        <h2>🔵 Blue Glock Switch (2x + 10k Ammo)</h2>
+        <p>$15</p>
+        <p class="stock out-stock">Out of Stock</p>
+      </div>
+      <img src="https://imgur.com/GZNrBbW.png" alt="Blue Glock" width="100">
+    </div>
 
-    <section class="product">
-      <img src="https://imgur.com/GZNrBbW.png" alt="1M In-Game Coins" />
-      <h2>💰 1 Million In-Game Coins</h2>
-      <p>$15.00</p>
-      <button disabled>Out of Stock</button>
-    </section>
+    <div class="product">
+      <div>
+        <h2>🟦 Standard Blue Glock</h2>
+        <p>$5</p>
+        <p class="stock out-stock">Out of Stock</p>
+      </div>
+      <img src="https://imgur.com/GZNrBbW.png" alt="Standard Glock" width="100">
+    </div>
 
-    <section id="account">
-      <h2>👤 Login or Sign Up</h2>
-      <form id="login-form">
-        <input type="text" placeholder="Username" required />
-        <input type="password" placeholder="Password" required />
-        <button type="submit">Login</button>
-        <button type="button" onclick="signUp()">Sign Up</button>
-      </form>
-    </section>
-
-    <section id="checkout" style="display: none">
-      <h2>✅ Order Complete</h2>
-      <p>Send this order ID in a ticket in our Discord: <strong id="order-id"></strong></p>
-      <a href="https://discord.gg/FkqyasFRAs" target="_blank">🎟️ Make a Ticket</a>
-    </section>
-  </main>
+    <div class="order-history">
+      <h2>📜 My Orders</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Product</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="orders">
+          <!-- Order data would be populated here via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <script>
-    function signUp() {
-      alert("Sign-up functionality coming soon.");
-    }
+    // Example static order data
+    const orderData = [
+      { id: "#123ABC", product: "Glock Drum", status: "Completed", date: "2025-07-22" },
+      { id: "#456DEF", product: "Blue Glock", status: "Pending", date: "2025-07-21" }
+    ];
 
-    function generateOrderId() {
-      return 'ORD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    }
-
-    document.getElementById("login-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      document.getElementById("checkout").style.display = "block";
-      document.getElementById("order-id").textContent = generateOrderId();
+    const orderContainer = document.getElementById('orders');
+    orderData.forEach(order => {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${order.id}</td><td>${order.product}</td><td>${order.status}</td><td>${order.date}</td>`;
+      orderContainer.appendChild(row);
     });
   </script>
 </body>
 </html>
-
