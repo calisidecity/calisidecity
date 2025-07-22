@@ -3,54 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CaliSide City RP Store</title>
+  <title>CaliSide RP Store</title>
   <style>
-    * { box-sizing: border-box; }
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #111;
-      color: white;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #fff;
     }
     header {
+      background-color: #1f1f1f;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #1a1a1a;
-      padding: 10px 20px;
-      border-bottom: 1px solid #333;
+      flex-wrap: wrap;
     }
-    header h1 { font-size: 20px; }
-    .top-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .cart-btn {
-      background: #333;
-      color: white;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 4px;
-      position: relative;
-    }
-    .cart-count {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: red;
-      color: white;
-      font-size: 10px;
-      padding: 2px 5px;
-      border-radius: 50%;
+    header h1 {
+      margin: 0;
+      font-size: 24px;
     }
     .search-bar {
+      flex: 1;
+      text-align: center;
+    }
+    .search-bar input {
+      width: 60%;
       padding: 6px;
       border-radius: 4px;
       border: none;
-      width: 150px;
     }
-    .container {
+    .cart-info {
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .login-box {
+      margin-top: 10px;
+      text-align: center;
+    }
+    main {
       padding: 20px;
     }
     .products-row {
@@ -60,145 +52,190 @@
       margin-bottom: 40px;
     }
     .card {
-      background: #222;
+      background-color: #1e1e1e;
       padding: 15px;
-      border-radius: 10px;
+      border-radius: 8px;
       width: 220px;
       position: relative;
-      text-align: center;
     }
     .card img {
       width: 100%;
-      border-radius: 8px;
+      border-radius: 6px;
+    }
+    .card h2 {
+      font-size: 18px;
+      margin: 10px 0 5px;
+    }
+    .card p {
+      font-size: 14px;
     }
     .buy-button {
-      background: #007bff;
-      color: white;
+      background-color: #007bff;
+      color: #fff;
+      padding: 6px 10px;
       border: none;
-      padding: 8px 12px;
-      margin-top: 10px;
-      border-radius: 5px;
+      border-radius: 4px;
       cursor: pointer;
+      margin-top: 10px;
     }
     .buy-button:disabled {
-      background: #555;
+      background-color: gray;
       cursor: not-allowed;
     }
     .out-of-stock {
       position: absolute;
       top: 10px;
-      right: 10px;
-      background: red;
-      color: white;
+      left: 10px;
+      background-color: red;
       padding: 2px 6px;
-      border-radius: 4px;
+      border-radius: 3px;
       font-size: 12px;
     }
     .footer {
-      background: #1a1a1a;
+      background-color: #1f1f1f;
       text-align: center;
       padding: 15px;
+      margin-top: 40px;
       font-size: 14px;
-      border-top: 1px solid #333;
     }
-    .modal-overlay {
+    #cartModal {
       display: none;
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.8);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
       justify-content: center;
       align-items: center;
-      z-index: 1000;
     }
-    .modal {
-      background: #222;
-      padding: 30px;
-      border-radius: 10px;
+    #cartModal .modal {
+      background: #fff;
+      color: #000;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
       text-align: center;
     }
-    .modal a {
-      color: #00afff;
-      text-decoration: none;
+    #cartModal button {
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
+
   <header>
-    <h1>CaliSide City RP Store</h1>
-    <div class="top-controls">
-      <input type="text" class="search-bar" placeholder="Search..." oninput="filterProducts(this.value)" />
-      <button class="cart-btn" onclick="toggleCart()">Cart <span class="cart-count" id="cart-count">0</span></button>
+    <h1>CaliSide RP</h1>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search products...">
     </div>
+    <div class="cart-info" onclick="checkout()">🛒 Cart (<span id="cartCount">0</span>)</div>
   </header>
 
-  <div class="container" id="store">
-    <!-- Coins -->
-    <div class="products-row" id="coins">
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="1K Coins"><h2>1,000 Coins – $3</h2><p>Starter coin bundle.</p><button class="buy-button" disabled>Add to Cart</button></div>
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="2K Coins"><h2>2,000 Coins – $5</h2><p>Double coin value.</p><button class="buy-button" disabled>Add to Cart</button></div>
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="3K Coins"><h2>3,000 Coins – $7</h2><p>Best value for casual players.</p><button class="buy-button" disabled>Add to Cart</button></div>
-    </div>
-
-    <!-- Custom Items -->
-    <div class="products-row" id="custom-items">
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="4-Piece Clothing"><h2>4-Piece Clothing – $20</h2><p>Full outfit package.</p><button class="buy-button" disabled>Add to Cart</button></div>
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="Custom Drug"><h2>Custom Drug – $10</h2><p>Custom in-game drug.</p><button class="buy-button" disabled>Add to Cart</button></div>
-    </div>
-
-    <!-- Gang Tiers -->
-    <div class="products-row" id="gang-tiers">
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="Gang Tier 1"><h2>Custom Gang Tier 1 – $10</h2><p>No block.</p><button class="buy-button" disabled>Add to Cart</button></div>
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="Gang Tier 2"><h2>Custom Gang Tier 2 – $20</h2><p>2 cloth slots + 100k dirty.</p><button class="buy-button" disabled>Add to Cart</button></div>
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="Gang Tier 3"><h2>Custom Gang Tier 3 – $50</h2><p>200k each, 3 clothings, big block.</p><button class="buy-button" disabled>Add to Cart</button></div>
-    </div>
-
-    <!-- Weapons -->
-    <div class="products-row" id="weapons">
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="2x Glock Switch"><h2>2x Blue Glock Switch – $5</h2><p>Set of 2 blue glock switches.</p><button class="buy-button" disabled>Add to Cart</button></div>
-      <div class="card"><span class="out-of-stock">Out of Stock</span><img src="https://i.imgur.com/GZNrBbW.png" alt="Glock Drum Beam"><h2>12 Glock Switch + Drum + Beam – $12</h2><p>Big pack for your arsenal.</p><button class="buy-button" disabled>Add to Cart</button></div>
-    </div>
+  <div class="login-box" id="loginBox">
+    <input type="text" id="username" placeholder="Enter username">
+    <button onclick="login()">Login</button>
   </div>
 
-  <!-- Modal -->
-  <div class="modal-overlay" id="modalOverlay">
+  <main>
+    <div class="products-row" id="productContainer"></div>
+  </main>
+
+  <div id="cartModal">
     <div class="modal">
-      <h2>Order Confirmed!</h2>
-      <p>Your order ID is: <strong id="orderId">ABC123</strong></p>
-      <p>Please create a ticket and send your ID: <br>
-      <a href="https://discord.gg/FkqyasFRAs" target="_blank">Join CaliSide Discord</a></p>
-      <button onclick="document.getElementById('modalOverlay').style.display='none'">Close</button>
+      <h3>Order Submitted</h3>
+      <p>Your Order ID: <strong id="orderIdText"></strong></p>
+      <p>Make a ticket in our Discord with your order ID:</p>
+      <a href="https://discord.gg/FkqyasFRAs" target="_blank">https://discord.gg/FkqyasFRAs</a>
+      <br>
+      <button onclick="closeModal()">Close</button>
     </div>
   </div>
 
   <footer class="footer">
-    © 2025 CaliSide RP — Join us: <a href="https://discord.gg/FkqyasFRAs" target="_blank" style="color:#00afff;">Discord</a>
+    © 2025 CaliSide RP • <a href="https://discord.gg/FkqyasFRAs" style="color:#fff;">Join Discord</a>
   </footer>
 
   <script>
-    const cart = {};
-    const cartCount = document.getElementById("cart-count");
+    let loggedInUser = null;
+    let cart = {};
 
-    function toggleCart() {
-      if (Object.keys(cart).length === 0) {
-        const id = Math.random().toString(36).substring(2, 7).toUpperCase();
-        document.getElementById('orderId').textContent = id;
-        document.getElementById('modalOverlay').style.display = 'flex';
-      } else {
-        alert("Add to cart is disabled — All items are out of stock.");
+    const products = [
+      { id: "coin1000", name: "1,000 Coin", price: 1, stock: 0 },
+      { id: "coin2000", name: "2,000 Coin", price: 2, stock: 0 },
+      { id: "coin3000", name: "3,000 Coin", price: 3, stock: 0 },
+      { id: "customdrug4pc", name: "Custom Drug + 4 Piece Clothing", price: 25, stock: 0 },
+      { id: "glockswitch2x", name: "2x Blue Glock Switch", price: 5, stock: 0 },
+      { id: "glockkit", name: "Glock Switch + Drum + Beam", price: 12, stock: 0 },
+      { id: "personalgun", name: "Personal Gun", price: 7, stock: 0 },
+      { id: "ogbadge", name: "OG Badge", price: 3, stock: 0 },
+      { id: "eventticket", name: "Event Ticket", price: 5, stock: 0 },
+      { id: "rpideapack", name: "RP Idea Pack", price: 4, stock: 0 },
+      { id: "facewearpack", name: "Facewear Pack", price: 4, stock: 0 },
+      { id: "invslotpack", name: "Inventory Slot Pack", price: 5, stock: 0 },
+      { id: "4piececlothing", name: "4 Piece Clothing", price: 10, stock: 0 },
+    ];
+
+    function login() {
+      const user = document.getElementById('username').value;
+      if (user.trim() !== "") {
+        loggedInUser = user;
+        document.getElementById('loginBox').innerHTML = `Welcome, ${user} <button onclick="logout()">Logout</button>`;
       }
     }
 
-    function updateCartCount() {
-      cartCount.textContent = Object.keys(cart).length;
+    function logout() {
+      loggedInUser = null;
+      location.reload();
     }
 
-    function filterProducts(query) {
-      query = query.toLowerCase();
-      document.querySelectorAll(".card").forEach(card => {
-        const text = card.innerText.toLowerCase();
-        card.style.display = text.includes(query) ? "block" : "none";
+    function updateCartCount() {
+      const count = Object.values(cart).reduce((a, b) => a + b, 0);
+      document.getElementById("cartCount").textContent = count;
+    }
+
+    function addToCart(id) {
+      if (!loggedInUser) return alert("Please log in to add items to cart.");
+      if (!cart[id]) cart[id] = 0;
+      cart[id]++;
+      updateCartCount();
+    }
+
+    function renderProducts() {
+      const container = document.getElementById("productContainer");
+      container.innerHTML = "";
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      products.sort((a, b) => a.name.localeCompare(b.name));
+      products.forEach(p => {
+        if (!p.name.toLowerCase().includes(search)) return;
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          ${p.stock === 0 ? '<span class="out-of-stock">Out of Stock</span>' : ""}
+          <img src="https://i.imgur.com/GZNrBbW.png" alt="${p.name}">
+          <h2>${p.name} – $${p.price}</h2>
+          <button class="buy-button" ${p.stock === 0 ? "disabled" : ""} onclick="addToCart('${p.id}')">Add to Cart</button>
+        `;
+        container.appendChild(card);
       });
     }
+
+    function checkout() {
+      if (!loggedInUser) return alert("Please log in first.");
+      if (Object.keys(cart).length === 0) return alert("Your cart is empty.");
+      const orderId = Math.random().toString(36).substring(2, 8).toUpperCase();
+      document.getElementById("orderIdText").textContent = orderId;
+      document.getElementById("cartModal").style.display = "flex";
+      cart = {};
+      updateCartCount();
+    }
+
+    function closeModal() {
+      document.getElementById("cartModal").style.display = "none";
+    }
+
+    document.getElementById("searchInput").addEventListener("input", renderProducts);
+
+    renderProducts();
+    updateCartCount();
   </script>
 </body>
 </html>
