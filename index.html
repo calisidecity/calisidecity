@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CaliSide City RP Store with Accounts & Discounts</title>
+<title>CaliSide City RP Store with Login & Preview</title>
 <style>
-  /* Basic reset and styles */
   * {
     box-sizing: border-box;
   }
@@ -16,6 +15,7 @@
     background-size: cover;
     color: #f0f0f0;
     position: relative;
+    overflow-x: hidden;
   }
   body::before {
     content: "";
@@ -30,6 +30,7 @@
     max-width: 980px;
     margin: 0 auto;
     padding: 30px 20px 60px;
+    transition: filter 0.5s ease;
   }
   header {
     text-align: center;
@@ -46,31 +47,83 @@
     font-size: 1.2rem;
     color: #bbb;
   }
+  /* Blur overlay for locked view */
+  #blur-overlay {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #00aaff;
+    padding: 20px;
+    text-align: center;
+  }
+  #blur-overlay h2 {
+    font-size: 2.8rem;
+    margin-bottom: 18px;
+  }
+  #blur-overlay input {
+    width: 280px;
+    max-width: 90vw;
+    padding: 14px 18px;
+    margin: 8px 0;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+  }
+  #blur-overlay button {
+    width: 300px;
+    max-width: 90vw;
+    margin-top: 15px;
+    background: #00aaff;
+    border: none;
+    padding: 16px 0;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  #blur-overlay button:hover {
+    background: #008fcc;
+  }
+  #blur-overlay small {
+    display: block;
+    margin-top: 12px;
+    color: #888;
+    font-size: 0.85rem;
+  }
+  #blur-message {
+    color: #ff5555;
+    margin-top: 8px;
+    font-weight: 700;
+    min-height: 1.2rem;
+  }
   /* Login/Register */
-  #login-section, #dashboard-section {
-    max-width: 400px;
+  #dashboard-section {
+    max-width: 940px;
     margin: 0 auto 40px;
     background: rgba(30,30,30,0.9);
     padding: 28px 30px;
     border-radius: 14px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    display: none;
   }
-  #login-section h2, #dashboard-section h2 {
+  #dashboard-section h2 {
     color: #00aaff;
     margin-bottom: 18px;
     text-align: center;
   }
-  #login-section input, #promo-code-input, #testimonial-text {
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 14px;
-    border-radius: 8px;
-    border: none;
-    font-size: 1rem;
-  }
-  #login-section button, #testimonial-submit, #logout-btn {
-    width: 100%;
-    background: #00aaff;
+  #logout-btn {
+    display: block;
+    margin: 0 auto 20px auto;
+    background: #cc0000;
     border: none;
     padding: 14px 0;
     border-radius: 8px;
@@ -78,14 +131,10 @@
     font-weight: 700;
     font-size: 1.1rem;
     cursor: pointer;
-    transition: background 0.3s ease;
+    width: 180px;
   }
-  #login-section button:hover, #testimonial-submit:hover, #logout-btn:hover {
-    background: #008fcc;
-  }
-  #logout-btn {
-    margin-top: 15px;
-    background: #cc0000;
+  #logout-btn:hover {
+    background: #990000;
   }
   /* Products grid */
   .products {
@@ -352,7 +401,7 @@
     header h1 {
       font-size: 2.4rem;
     }
-    #login-section, #dashboard-section {
+    #dashboard-section {
       max-width: 90vw;
     }
     .cart {
@@ -362,155 +411,124 @@
 </style>
 </head>
 <body>
-<div id="app">
+  <div id="app" aria-live="polite">
 
-  <header>
-    <h1>🛒 CaliSide City RP Store</h1>
-    <p>🔥 All items currently out of stock — stay tuned for restocks!</p>
-  </header>
+    <header>
+      <h1>🛒 CaliSide City RP Store</h1>
+      <p>🔥 All items currently out of stock — stay tuned for restocks!</p>
+    </header>
 
-  <!-- Login/Register -->
-  <section id="login-section" aria-label="User Login or Registration">
-    <h2>👤 Login or Register</h2>
-    <input type="text" id="username-input" placeholder="Enter username" aria-label="Username" />
-    <button id="login-btn">Login / Register</button>
-  </section>
+    <!-- User Dashboard -->
+    <section id="dashboard-section" aria-label="User Dashboard">
+      <h2>Welcome, <span id="user-display"></span>!</h2>
+      <button id="logout-btn">Logout</button>
 
-  <!-- User Dashboard -->
-  <section id="dashboard-section" aria-label="User Dashboard" style="display:none;">
-    <h2>Welcome, <span id="user-display"></span>!</h2>
-    <button id="logout-btn">Logout</button>
+      <div class="cart" aria-label="Shopping cart">
+        <h3>🛒 Your Cart</h3>
+        <div id="cart-items">No items yet.</div>
+        <p id="total">Total: $0</p>
 
-    <div class="cart" aria-label="Shopping cart">
-      <h3>🛒 Your Cart</h3>
-      <div id="cart-items">No items yet.</div>
-      <p id="total">Total: $0</p>
+        <div id="promo-section" aria-label="Promo code section">
+          <label for="promo-code-input">🎟️ Promo Code (coming soon):</label>
+          <input type="text" id="promo-code-input" placeholder="Enter code" aria-label="Promo code" disabled />
+          <button id="apply-promo-btn" disabled>Apply</button>
+          <div id="promo-message" role="alert" aria-live="polite"></div>
+        </div>
 
-      <div id="promo-section">
-        <label for="promo-code-input">🎟️ Promo Code:</label>
-        <input type="text" id="promo-code-input" placeholder="Enter code" aria-label="Promo code" />
-        <button id="apply-promo-btn">Apply</button>
-        <div id="promo-message" role="alert" aria-live="polite"></div>
+        <button class="checkout-button" id="checkout-btn" disabled>Checkout</button>
+        <div id="order-result" aria-live="polite"></div>
       </div>
 
-      <button class="checkout-button" id="checkout-btn" disabled>Checkout</button>
-      <div id="order-result" aria-live="polite"></div>
-    </div>
+    </section>
 
-  </section>
+    <!-- Products -->
+    <section class="products" aria-label="Products for sale">
+      <div class="card">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="1M Coins" />
+        <h2>💰 1M Coins – $15</h2>
+        <p>Buy big stacks for your grind. Delivered instantly.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
 
-  <!-- Products -->
-  <section class="products" aria-label="Products for sale">
-    <div class="card">
-      <span class="out-of-stock">Out of Stock</span>
-      <img src="https://i.imgur.com/GZNrBbW.png" alt="1M Coins" />
-      <h2>💰 1M Coins – $15</h2>
-      <p>Buy big stacks for your grind. Delivered instantly.</p>
-      <button class="buy-button" disabled>Add to Cart</button>
-    </div>
+      <div class="card">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Glock Drum" />
+        <h2>🔫 Glock Drum w/ Switch + Beam – $10</h2>
+        <p>Upgrade your street loadout. No cap.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
 
-    <div class="card">
-      <span class="out-of-stock">Out of Stock</span>
-      <img src="https://i.imgur.com/GZNrBbW.png" alt="Glock Drum" />
-      <h2>🔫 Glock Drum w/ Switch + Beam – $10</h2>
-      <p>Upgrade your street loadout. No cap.</p>
-      <button class="buy-button" disabled>Add to Cart</button>
-    </div>
+      <div class="card">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Blue Glock" />
+        <h2>🔵 Blue Glock w/ Switch (2 pcs + 10k Ammo) – $5</h2>
+        <p>Clean & custom for your RP grind.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
+    </section>
 
-    <div class="card">
-      <span class="out-of-stock">Out of Stock</span>
-      <img src="https://i.imgur.com/GZNrBbW.png" alt="Blue Glock" />
-      <h2>🔵 Blue Glock w/ Switch – $5</h2>
-      <p>Get 2 Blue Glocks with Switch and 10,000 ammo. Clean & custom for your RP grind.</p>
-      <button class="buy-button" disabled>Add to Cart</button>
-    </div>
-  </section>
+    <!-- Testimonials -->
+    <section id="testimonial-section" aria-label="Testimonials and Reviews">
+      <h3>🗣️ Testimonials & Reviews</h3>
+      <textarea id="testimonial-text" placeholder="Write your testimonial here..." aria-label="Testimonial"></textarea>
+      <button id="testimonial-submit">Submit Testimonial</button>
+      <div id="testimonials-list" aria-live="polite" aria-atomic="true"></div>
+    </section>
 
-  <!-- Testimonials -->
-  <section id="testimonial-section" aria-label="Testimonials and Reviews">
-    <h3>🗣️ Testimonials & Reviews</h3>
-    <textarea id="testimonial-text" placeholder="Write your testimonial here..." aria-label="Testimonial"></textarea>
-    <button id="testimonial-submit">Submit Testimonial</button>
-    <div id="testimonials-list" aria-live="polite" aria-atomic="true"></div>
-  </section>
+    <footer>
+      📬 Join our <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener">Discord</a> for updates and support!
+    </footer>
 
-  <footer>
-    📬 Join our <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener">Discord</a> for updates and support!
-  </footer>
-
-</div>
-
-<!-- Modal for order ID -->
-<div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc" style="display:none; position:fixed; z-index:100; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
-  <div id="modal">
-    <h2 id="modal-title">✅ Order Complete!</h2>
-    <p id="modal-desc">
-      Please send this Order ID in a ticket on our Discord for fast delivery:<br/><br/>
-      <strong id="modal-order-id" style="word-break:break-word;"></strong><br/><br/>
-      Discord: <a href="https://discord.gg/FkqyasFRAs" target="_blank" style="color:#0ff; text-decoration:underline;">https://discord.gg/FkqyasFRAs</a>
-    </p>
-    <button onclick="closeModal()">Got it!</button>
   </div>
-</div>
+
+  <!-- Modal for order ID -->
+  <div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc" style="display:none; position:fixed; z-index:100; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+    <div id="modal">
+      <h2 id="modal-title">✅ Order Complete!</h2>
+      <p id="modal-desc">
+        Please send this Order ID in a ticket on our Discord for fast delivery:<br/><br/>
+        <strong id="modal-order-id" style="word-break:break-word;"></strong><br/><br/>
+        Discord: <a href="https://discord.gg/FkqyasFRAs" target="_blank" style="color:#0ff; text-decoration:underline;">https://discord.gg/FkqyasFRAs</a>
+      </p>
+      <button onclick="closeModal()">Got it!</button>
+    </div>
+  </div>
+
+  <!-- Blur login/preview overlay -->
+  <div id="blur-overlay" role="dialog" aria-modal="true" aria-labelledby="blur-title" aria-describedby="blur-desc" >
+    <h2 id="blur-title">Welcome to CaliSide City RP Store</h2>
+    <input type="text" id="login-username" placeholder="Username" aria-label="Username" autocomplete="username" />
+    <input type="password" id="login-password" placeholder="Password" aria-label="Password" autocomplete="current-password" />
+    <button id="login-btn">Sign In / Register</button>
+    <button id="preview-btn" style="margin-top: 12px; background: #444;">Preview Without Login</button>
+    <small>Sign in to access your dashboard, orders, and submit testimonials.</small>
+    <div id="blur-message" role="alert" aria-live="assertive"></div>
+  </div>
 
 <script>
-  // --- User Accounts ---
-  const loginSection = document.getElementById('login-section');
+  // --- Elements ---
+  const blurOverlay = document.getElementById('blur-overlay');
+  const loginUsername = document.getElementById('login-username');
+  const loginPassword = document.getElementById('login-password');
+  const loginBtn = document.getElementById('login-btn');
+  const previewBtn = document.getElementById('preview-btn');
+  const blurMessage = document.getElementById('blur-message');
+
   const dashboardSection = document.getElementById('dashboard-section');
   const userDisplay = document.getElementById('user-display');
-  const usernameInput = document.getElementById('username-input');
-  const loginBtn = document.getElementById('login-btn');
   const logoutBtn = document.getElementById('logout-btn');
 
-  let currentUser = null;
-
-  // Simple order history stored per user in localStorage: { username: [order objects] }
-  function loadUser() {
-    const storedUser = localStorage.getItem('csc_rp_user');
-    if (storedUser) {
-      currentUser = storedUser;
-      showDashboard();
-    }
-  }
-  function showDashboard() {
-    loginSection.style.display = 'none';
-    dashboardSection.style.display = 'block';
-    userDisplay.textContent = currentUser;
-    updateOrderHistory();
-    updateCartUI();
-  }
-  function logout() {
-    localStorage.removeItem('csc_rp_user');
-    currentUser = null;
-    loginSection.style.display = 'block';
-    dashboardSection.style.display = 'none';
-    cart.length = 0;
-    total = 0;
-    promoApplied = false;
-    promoMessage.textContent = '';
-    updateCartUI();
-  }
-  loginBtn.addEventListener('click', () => {
-    const name = usernameInput.value.trim();
-    if(name.length < 3) {
-      alert('Username must be at least 3 characters.');
-      return;
-    }
-    localStorage.setItem('csc_rp_user', name);
-    currentUser = name;
-    showDashboard();
-  });
-  logoutBtn.addEventListener('click', logout);
-  loadUser();
-
-  // --- Products ---
+  // Products
   const products = [
     { id: 1, name: '1M Coins', price: 15, desc: 'Buy big stacks for your grind. Delivered instantly.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
     { id: 2, name: 'Glock Drum w/ Switch + Beam', price: 10, desc: 'Upgrade your street loadout. No cap.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
     { id: 3, name: 'Blue Glock w/ Switch (2 pcs + 10k Ammo)', price: 5, desc: 'Clean & custom for your RP grind.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
   ];
 
-  // --- Cart ---
+  // Cart and user data
+  let currentUser = null;
+  let users = JSON.parse(localStorage.getItem('csc_rp_users') || '{}'); // { username: password }
   let cart = [];
   let total = 0;
   let promoApplied = false;
@@ -518,32 +536,141 @@
   const cartItems = document.getElementById('cart-items');
   const totalDisplay = document.getElementById('total');
   const checkoutBtn = document.getElementById('checkout-btn');
+
+  // Disable promo code for now but show input
   const promoCodeInput = document.getElementById('promo-code-input');
   const applyPromoBtn = document.getElementById('apply-promo-btn');
   const promoMessage = document.getElementById('promo-message');
-  const orderResult = document.getElementById('order-result');
+  applyPromoBtn.disabled = true;
+  promoCodeInput.disabled = true;
 
-  // Products buttons disabled due to stock 0
-  function updateProductsUI() {
-    const productCards = document.querySelectorAll('.card');
-    products.forEach((product, i) => {
-      const btn = productCards[i].querySelector('button');
-      const stockSpan = productCards[i].querySelector('.out-of-stock');
-      if (product.stock > 0) {
-        btn.disabled = false;
-        btn.classList.add('enabled');
-        stockSpan.style.display = 'none';
-      } else {
-        btn.disabled = true;
+  // Testimonials
+  const testimonialText = document.getElementById('testimonial-text');
+  const testimonialSubmit = document.getElementById('testimonial-submit');
+  const testimonialsList = document.getElementById('testimonials-list');
+
+  // Modal
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalOrderId = document.getElementById('modal-order-id');
+
+  // --- Functions ---
+
+  function blurSite() {
+    document.getElementById('app').style.filter = 'blur(8px) brightness(0.7)';
+    blurOverlay.style.display = 'flex';
+  }
+  function unblurSite() {
+    document.getElementById('app').style.filter = 'none';
+    blurOverlay.style.display = 'none';
+  }
+
+  // Login/register handler
+  loginBtn.addEventListener('click', () => {
+    const username = loginUsername.value.trim();
+    const password = loginPassword.value;
+    blurMessage.textContent = '';
+    if(username.length < 3) {
+      blurMessage.textContent = 'Username must be at least 3 characters.';
+      return;
+    }
+    if(password.length < 5) {
+      blurMessage.textContent = 'Password must be at least 5 characters.';
+      return;
+    }
+    // Check if user exists
+    if(users.hasOwnProperty(username)) {
+      if(users[username] !== password) {
+        blurMessage.textContent = 'Incorrect password.';
+        return;
+      }
+      // Success login
+      currentUser = username;
+      localStorage.setItem('csc_rp_currentUser', currentUser);
+      localStorage.setItem('csc_rp_users', JSON.stringify(users));
+      showDashboard();
+      unblurSite();
+    } else {
+      // Register new user
+      users[username] = password;
+      localStorage.setItem('csc_rp_users', JSON.stringify(users));
+      currentUser = username;
+      localStorage.setItem('csc_rp_currentUser', currentUser);
+      showDashboard();
+      unblurSite();
+    }
+  });
+
+  // Preview without login
+  previewBtn.addEventListener('click', () => {
+    currentUser = null;
+    localStorage.removeItem('csc_rp_currentUser');
+    blurMessage.textContent = '';
+    showDashboard(true);
+    unblurSite();
+  });
+
+  // Show dashboard (with or without user)
+  function showDashboard(preview=false) {
+    if(preview) {
+      dashboardSection.style.display = 'block';
+      userDisplay.textContent = 'Preview Mode';
+      logoutBtn.style.display = 'none';
+      cart = [];
+      total = 0;
+      updateCartUI();
+      loadTestimonials();
+      disableCart(true);
+    } else {
+      dashboardSection.style.display = 'block';
+      userDisplay.textContent = currentUser;
+      logoutBtn.style.display = 'block';
+      loadUserCart();
+      loadTestimonials();
+      disableCart(false);
+    }
+  }
+
+  function disableCart(disabled) {
+    checkoutBtn.disabled = disabled;
+    const buttons = document.querySelectorAll('.buy-button');
+    buttons.forEach(btn => {
+      btn.disabled = disabled || btn.classList.contains('disabled');
+      if(btn.disabled) {
         btn.classList.remove('enabled');
-        stockSpan.style.display = 'block';
+        btn.classList.add('buy-button');
+      } else {
+        btn.classList.add('enabled');
       }
     });
   }
-  updateProductsUI();
 
+  // Logout
+  logoutBtn.addEventListener('click', () => {
+    currentUser = null;
+    localStorage.removeItem('csc_rp_currentUser');
+    cart = [];
+    total = 0;
+    updateCartUI();
+    dashboardSection.style.display = 'none';
+    blurSite();
+  });
+
+  // Load user cart from localStorage
+  function loadUserCart() {
+    cart = [];
+    total = 0;
+    if(!currentUser) return;
+    const savedCart = JSON.parse(localStorage.getItem(`csc_rp_cart_${currentUser}`) || '[]');
+    savedCart.forEach(item => {
+      cart.push(item);
+      total += item.price * item.qty;
+    });
+    updateCartUI();
+  }
+
+  // Update cart UI
   function updateCartUI() {
-    if (cart.length === 0) {
+    if(cart.length === 0) {
       cartItems.textContent = 'No items yet.';
       totalDisplay.textContent = `Total: $0`;
       checkoutBtn.disabled = true;
@@ -562,118 +689,16 @@
     }
   }
 
-  // For demo all buttons disabled (stock 0), so no add to cart event listeners here
-
-  // --- Promo Codes ---
-  const validPromoCodes = {
-    'FOMO15': 0.15,  // 15% discount
-    'CSRP5': 0.05    // 5% discount
-  };
-
-  applyPromoBtn.addEventListener('click', () => {
-    const code = promoCodeInput.value.trim().toUpperCase();
-    if(!code) {
-      promoMessage.textContent = 'Please enter a promo code.';
-      return;
-    }
-    if(!validPromoCodes.hasOwnProperty(code)) {
-      promoMessage.textContent = 'Invalid promo code.';
-      return;
-    }
-    if(promoApplied) {
-      promoMessage.textContent = 'Promo code already applied.';
-      return;
-    }
-    const discount = validPromoCodes[code];
-    total = total * (1 - discount);
-    promoApplied = true;
-    updateCartUI();
-    promoMessage.textContent = `Promo applied! You saved ${(discount*100).toFixed(0)}%. New total: $${total.toFixed(2)}`;
+  // Add to cart buttons disabled (all stock zero)
+  const buyButtons = document.querySelectorAll('.buy-button');
+  buyButtons.forEach((btn, i) => {
+    btn.disabled = true; // stock 0
+    btn.classList.remove('enabled');
+    btn.classList.add('buy-button');
+    // If you want to test, set product stock > 0 and enable here
   });
 
-  // --- Checkout ---
-  checkoutBtn.addEventListener('click', () => {
-    if(cart.length === 0) return;
-
-    // Save order in localStorage per user
-    let orders = JSON.parse(localStorage.getItem(`csc_rp_orders_${currentUser}`)) || [];
-    const orderId = 'CSRP' + Math.floor(100000 + Math.random() * 900000);
-    const order = {
-      id: orderId,
-      items: [...cart],
-      total: total.toFixed(2),
-      date: new Date().toISOString()
-    };
-    orders.push(order);
-    localStorage.setItem(`csc_rp_orders_${currentUser}`, JSON.stringify(orders));
-    cart = [];
-    total = 0;
-    promoApplied = false;
-    promoCodeInput.value = '';
-    promoMessage.textContent = '';
-    updateCartUI();
-    updateOrderHistory();
-
-    // Show modal with order ID & Discord link
-    document.getElementById('modal-order-id').textContent = orderId;
-    document.getElementById('modal-overlay').style.display = 'flex';
-  });
-
-  function closeModal() {
-    document.getElementById('modal-overlay').style.display = 'none';
-  }
-
-  window.closeModal = closeModal;
-
-  // --- Order History in Dashboard ---
-  function updateOrderHistory() {
-    let orders = JSON.parse(localStorage.getItem(`csc_rp_orders_${currentUser}`)) || [];
-    const dashboardSectionEl = document.getElementById('dashboard-section');
-    // Remove old order history if any
-    let oldOrderDiv = document.getElementById('order-history');
-    if (oldOrderDiv) oldOrderDiv.remove();
-
-    const orderDiv = document.createElement('div');
-    orderDiv.id = 'order-history';
-    orderDiv.style.marginTop = '20px';
-    orderDiv.style.background = 'rgba(0,123,255,0.1)';
-    orderDiv.style.padding = '15px 20px';
-    orderDiv.style.borderRadius = '12px';
-    orderDiv.style.color = '#00aaff';
-    orderDiv.style.maxHeight = '200px';
-    orderDiv.style.overflowY = 'auto';
-
-    if (orders.length === 0) {
-      orderDiv.textContent = 'No orders yet.';
-    } else {
-      const h3 = document.createElement('h3');
-      h3.textContent = '📦 Your Orders';
-      h3.style.marginTop = '0';
-      h3.style.marginBottom = '10px';
-      orderDiv.appendChild(h3);
-
-      orders.slice().reverse().forEach(order => {
-        const o = document.createElement('div');
-        o.style.borderBottom = '1px solid #007bff33';
-        o.style.paddingBottom = '8px';
-        o.style.marginBottom = '8px';
-
-        let itemsList = order.items.map(i => `${i.name} x${i.qty}`).join(', ');
-        o.innerHTML = `<strong>ID:</strong> ${order.id} <br/>
-          <strong>Date:</strong> ${new Date(order.date).toLocaleString()} <br/>
-          <strong>Items:</strong> ${itemsList} <br/>
-          <strong>Total:</strong> $${order.total}`;
-        orderDiv.appendChild(o);
-      });
-    }
-    dashboardSectionEl.appendChild(orderDiv);
-  }
-
-  // --- Testimonials ---
-  const testimonialText = document.getElementById('testimonial-text');
-  const testimonialSubmit = document.getElementById('testimonial-submit');
-  const testimonialsList = document.getElementById('testimonials-list');
-
+  // Testimonials
   function loadTestimonials() {
     let testimonials = JSON.parse(localStorage.getItem('csc_rp_testimonials')) || [];
     testimonialsList.innerHTML = '';
@@ -690,7 +715,7 @@
 
   testimonialSubmit.addEventListener('click', () => {
     if(!currentUser) {
-      alert('Please login to submit a testimonial.');
+      alert('Please sign in or register to submit a testimonial.');
       return;
     }
     let text = testimonialText.value.trim();
@@ -706,9 +731,50 @@
     alert('Thank you for your testimonial!');
   });
 
-  loadTestimonials();
+  // Checkout button
+  checkoutBtn.addEventListener('click', () => {
+    if(cart.length === 0) return;
 
+    // Save order in localStorage per user
+    let orders = JSON.parse(localStorage.getItem(`csc_rp_orders_${currentUser}`)) || [];
+    const orderId = 'CSRP' + Math.floor(100000 + Math.random() * 900000);
+    const order = {
+      id: orderId,
+      items: [...cart],
+      total: total.toFixed(2),
+      date: new Date().toISOString()
+    };
+    orders.push(order);
+    localStorage.setItem(`csc_rp_orders_${currentUser}`, JSON.stringify(orders));
+    localStorage.setItem(`csc_rp_cart_${currentUser}`, JSON.stringify([]));
+    cart = [];
+    total = 0;
+    updateCartUI();
+
+    // Show modal with order ID & Discord link
+    modalOrderId.textContent = orderId;
+    modalOverlay.style.display = 'flex';
+  });
+
+  // Close modal
+  function closeModal() {
+    modalOverlay.style.display = 'none';
+  }
+  window.closeModal = closeModal;
+
+  // On load check if user logged in
+  function loadUser() {
+    const savedUser = localStorage.getItem('csc_rp_currentUser');
+    if(savedUser && users.hasOwnProperty(savedUser)) {
+      currentUser = savedUser;
+      showDashboard();
+      unblurSite();
+    } else {
+      blurSite();
+    }
+  }
+
+  loadUser();
 </script>
-
 </body>
 </html>
