@@ -47,7 +47,7 @@
     font-size: 1.2rem;
     color: #bbb;
   }
-  /* Blur overlay for locked view */
+  /* Login overlay */
   #blur-overlay {
     position: fixed;
     top:0; left:0; right:0; bottom:0;
@@ -93,19 +93,13 @@
   #blur-overlay button:hover {
     background: #008fcc;
   }
-  #blur-overlay small {
-    display: block;
-    margin-top: 12px;
-    color: #888;
-    font-size: 0.85rem;
-  }
   #blur-message {
     color: #ff5555;
     margin-top: 8px;
     font-weight: 700;
     min-height: 1.2rem;
   }
-  /* Login/Register */
+  /* User dashboard */
   #dashboard-section {
     max-width: 940px;
     margin: 0 auto 40px;
@@ -150,12 +144,7 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
     position: relative;
-  }
-  .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 16px 40px rgba(0,123,255,0.7);
   }
   .card img {
     max-height: 160px;
@@ -170,9 +159,6 @@
     margin: 0 0 12px;
     font-weight: 700;
     color: #00aaff;
-    display: flex;
-    align-items: center;
-    gap: 8px;
   }
   .card p {
     flex-grow: 1;
@@ -206,150 +192,7 @@
     font-size: 1.1rem;
     cursor: not-allowed;
   }
-  .buy-button.enabled {
-    background: #007bff;
-    color: white;
-    cursor: pointer;
-  }
-  .buy-button.enabled:hover {
-    background: #005fbb;
-  }
-  /* Cart section */
-  .cart {
-    margin: 0 auto 40px;
-    max-width: 480px;
-    background: rgba(25,25,25,0.9);
-    padding: 28px 30px;
-    border-radius: 14px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
-  }
-  .cart h3 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #00aaff;
-  }
-  #cart-items {
-    max-height: 220px;
-    overflow-y: auto;
-    background: #111;
-    padding: 15px 20px;
-    border-radius: 10px;
-    color: #ddd;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
-  #cart-items div {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  #total {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-top: 20px;
-    text-align: right;
-    color: #00d8ff;
-  }
-  .checkout-button {
-    margin-top: 28px;
-    background: #007bff;
-    width: 100%;
-    border: none;
-    padding: 16px 0;
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: white;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  .checkout-button:disabled {
-    background: #555;
-    color: #bbb;
-    cursor: not-allowed;
-  }
-  .checkout-button:hover:not(:disabled) {
-    background: #005fbb;
-  }
-  /* Testimonials */
-  #testimonial-section {
-    max-width: 680px;
-    margin: 0 auto 40px;
-    background: rgba(20,20,20,0.9);
-    padding: 20px 25px;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-  }
-  #testimonial-section h3 {
-    color: #00aaff;
-    margin-bottom: 16px;
-    text-align: center;
-  }
-  #testimonial-text {
-    min-height: 80px;
-    margin-bottom: 14px;
-    font-size: 1.1rem;
-  }
-  #testimonials-list {
-    max-height: 180px;
-    overflow-y: auto;
-    background: #111;
-    padding: 12px 16px;
-    border-radius: 10px;
-    color: #ddd;
-    font-size: 1rem;
-    line-height: 1.4;
-  }
-  #testimonials-list div {
-    margin-bottom: 12px;
-    border-bottom: 1px solid #007bff33;
-    padding-bottom: 8px;
-  }
-  /* Modal */
-  #modal-overlay {
-    display:none;
-    position:fixed;
-    z-index:100;
-    left:0; top:0; right:0; bottom:0;
-    background:rgba(0,0,0,0.75);
-    backdrop-filter:blur(4px);
-    align-items:center;
-    justify-content:center;
-  }
-  #modal {
-    background:#222;
-    padding:32px 28px;
-    border-radius:16px;
-    box-shadow:0 0 30px #00aaffaa;
-    max-width:400px;
-    color:#0ff;
-    text-align:center;
-  }
-  #modal h2 {
-    margin-top:0;
-    margin-bottom:16px;
-    font-size:2rem;
-    color:#00ccff;
-  }
-  #modal p {
-    font-size:1.2rem;
-    margin-bottom:24px;
-  }
-  #modal button {
-    background:#00aaff;
-    border:none;
-    padding:12px 24px;
-    border-radius:12px;
-    font-weight:700;
-    font-size:1.1rem;
-    color:white;
-    cursor:pointer;
-    transition:background 0.3s ease;
-  }
-  #modal button:hover {
-    background:#008fcc;
-  }
+  /* Footer */
   footer {
     margin-top: 60px;
     padding: 20px;
@@ -358,11 +201,6 @@
     color: #777;
     letter-spacing: 1.2px;
   }
-  a {
-    color: #00aaff;
-    text-decoration: underline;
-  }
-  /* Fix Discord link to be fully visible & clickable */
   footer a {
     color: #00aaff !important;
     opacity: 1 !important;
@@ -376,32 +214,6 @@
     color: #00d8ff !important;
     outline: none;
     text-shadow: 0 0 8px #00d8ff;
-  }
-  /* Scrollbars */
-  #cart-items::-webkit-scrollbar,
-  #testimonials-list::-webkit-scrollbar {
-    width: 8px;
-  }
-  #cart-items::-webkit-scrollbar-track,
-  #testimonials-list::-webkit-scrollbar-track {
-    background: #111;
-  }
-  #cart-items::-webkit-scrollbar-thumb,
-  #testimonials-list::-webkit-scrollbar-thumb {
-    background: #007bffaa;
-    border-radius: 6px;
-  }
-  /* Responsive */
-  @media (max-width: 480px) {
-    header h1 {
-      font-size: 2.4rem;
-    }
-    #dashboard-section {
-      max-width: 90vw;
-    }
-    .cart {
-      max-width: 90vw;
-    }
   }
 </style>
 </head>
@@ -417,30 +229,14 @@
     <section id="dashboard-section" aria-label="User Dashboard">
       <h2>Welcome, <span id="user-display"></span>!</h2>
       <button id="logout-btn">Logout</button>
-
-      <div class="cart" aria-label="Shopping cart">
-        <h3>🛒 Your Cart</h3>
-        <div id="cart-items">No items yet.</div>
-        <p id="total">Total: $0</p>
-
-        <div id="promo-section" aria-label="Promo code section">
-          <label for="promo-code-input">🎟️ Promo Code (coming soon):</label>
-          <input type="text" id="promo-code-input" placeholder="Enter code" aria-label="Promo code" disabled />
-          <button id="apply-promo-btn" disabled>Apply</button>
-          <div id="promo-message" role="alert" aria-live="polite"></div>
-        </div>
-
-        <button class="checkout-button" id="checkout-btn" disabled>Checkout</button>
-        <div id="order-result" aria-live="polite"></div>
-      </div>
-
+      <p>Cart functionality coming soon!</p>
     </section>
 
     <!-- Products -->
     <section class="products" aria-label="Products for sale">
       <div class="card">
         <span class="out-of-stock">Out of Stock</span>
-        <img src="https://i.imgur.com/GZNrBbW.png" alt="1M Coins" />
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="1K Coins" />
         <h2>💰 1K Coins – $10</h2>
         <p>Buy big stacks for your grind. Delivered instantly.</p>
         <button class="buy-button" disabled>Add to Cart</button>
@@ -464,22 +260,9 @@
     </section>
 
     <footer>
-      2025 CaliSide City RP — Join our Discord: <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener">https://discord.gg/FkqyasFRAs</a>
+      2025 CaliSide City RP — Join our Discord: <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener noreferrer">https://discord.gg/FkqyasFRAs</a>
     </footer>
 
-  </div>
-
-  <!-- Modal for order ID -->
-  <div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc" style="display:none; position:fixed; z-index:100; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
-    <div id="modal">
-      <h2 id="modal-title">✅ Order Complete!</h2>
-      <p id="modal-desc">
-        Please send this Order ID in a ticket on our Discord for fast delivery:<br/><br/>
-        <strong id="modal-order-id" style="word-break:break-word;"></strong><br/><br/>
-        Thank you for your purchase! <br/> <br/>
-        <button id="modal-close-btn" aria-label="Close order confirmation dialog">Close</button>
-      </p>
-    </div>
   </div>
 
   <!-- Login overlay -->
@@ -526,8 +309,6 @@
     usernameInput.value = "";
     passwordInput.value = "";
     blurMessage.textContent = "";
-
-    // Show products out of stock, no cart actions
   });
 
   // Logout button resets everything
@@ -535,69 +316,6 @@
     blurOverlay.style.display = 'flex';
     dashboardSection.style.display = 'none';
     userDisplay.textContent = "";
-    cart = [];
-    renderCart();
-  });
-
-  // Products and cart logic
-  const products = [
-    { id: 'coins1k', name: '1K Coins', price: 10, img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
-    { id: 'glockdrum', name: 'Glock Drum w/ Switch + Beam', price: 10, img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
-    { id: 'blueglock', name: 'Blue Glock w/ Switch (2 pcs + 10k Ammo)', price: 5, img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 }
-  ];
-
-  let cart = [];
-
-  const cartItemsDiv = document.getElementById('cart-items');
-  const totalDisplay = document.getElementById('total');
-  const checkoutBtn = document.getElementById('checkout-btn');
-  const promoInput = document.getElementById('promo-code-input');
-  const applyPromoBtn = document.getElementById('apply-promo-btn');
-  const promoMessage = document.getElementById('promo-message');
-  const orderResult = document.getElementById('order-result');
-  const modalOverlay = document.getElementById('modal-overlay');
-  const modalOrderId = document.getElementById('modal-order-id');
-  const modalCloseBtn = document.getElementById('modal-close-btn');
-
-  // Since everything is out of stock, disable all Add to Cart buttons
-  // They are disabled in HTML, so no cart adding possible
-
-  // Cart render (empty always)
-  function renderCart(){
-    if(cart.length === 0){
-      cartItemsDiv.textContent = 'No items yet.';
-      totalDisplay.textContent = 'Total: $0';
-      checkoutBtn.disabled = true;
-    } else {
-      cartItemsDiv.innerHTML = '';
-      let total = 0;
-      cart.forEach(item => {
-        const div = document.createElement('div');
-        div.textContent = `${item.name} x${item.qty}`;
-        const priceSpan = document.createElement('span');
-        priceSpan.textContent = `$${item.price * item.qty}`;
-        div.appendChild(priceSpan);
-        cartItemsDiv.appendChild(div);
-        total += item.price * item.qty;
-      });
-      totalDisplay.textContent = `Total: $${total}`;
-      checkoutBtn.disabled = false;
-    }
-  }
-
-  renderCart();
-
-  checkoutBtn.addEventListener('click', () => {
-    if(cart.length === 0) return;
-
-    // Generate fake order ID and show modal
-    const orderId = 'CSRP-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    modalOrderId.textContent = orderId;
-    modalOverlay.style.display = 'flex';
-  });
-
-  modalCloseBtn.addEventListener('click', () => {
-    modalOverlay.style.display = 'none';
   });
 </script>
 
