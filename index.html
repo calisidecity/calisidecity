@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CaliSide City RP Store</title>
+<title>CaliSide City RP Store - Out of Stock</title>
 <style>
   /* Reset and base */
   * {
@@ -69,6 +69,7 @@
     display: flex;
     flex-direction: column;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
   }
   .card:hover {
     transform: translateY(-8px);
@@ -102,19 +103,35 @@
     line-height: 1.4;
   }
 
+  /* Out of stock overlay */
+  .out-of-stock {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #cc0000cc;
+    color: white;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    pointer-events: none;
+    user-select: none;
+    box-shadow: 0 0 10px #cc0000bb;
+  }
+
   .buy-button {
-    background: #007bff;
+    background: #555;
     border: none;
     padding: 14px 0;
     border-radius: 8px;
-    color: white;
+    color: #bbb;
     font-weight: 700;
     font-size: 1.1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    cursor: not-allowed;
   }
   .buy-button:hover {
-    background: #005fbb;
+    background: #555;
   }
 
   /* Cart section */
@@ -161,19 +178,15 @@
 
   .checkout-button {
     margin-top: 28px;
-    background: #00aaff;
+    background: #555;
     width: 100%;
     border: none;
     padding: 16px 0;
     font-size: 1.3rem;
     font-weight: 800;
-    color: white;
+    color: #bbb;
     border-radius: 12px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  .checkout-button:hover {
-    background: #008fcc;
+    cursor: not-allowed;
   }
 
   #order-result {
@@ -227,30 +240,33 @@
   <div id="app">
     <header>
       <h1>🛒 CaliSide City RP Store</h1>
-      <p>🔥 Built for the city. Powered by the streets.</p>
+      <p>🔥 Currently Out of Stock - Stay tuned!</p>
     </header>
 
     <section class="products">
 
       <div class="card">
+        <span class="out-of-stock">Out of Stock</span>
         <img src="https://i.imgur.com/GZNrBbW.png" alt="1M Coins" />
         <h2>💰 1M Coins – $15</h2>
         <p>Buy big stacks for your grind. Delivered instantly.</p>
-        <button class="buy-button" onclick="addToCart('1M Coins', 15)">Add to Cart</button>
+        <button class="buy-button" disabled>Add to Cart</button>
       </div>
 
       <div class="card">
+        <span class="out-of-stock">Out of Stock</span>
         <img src="https://i.imgur.com/GZNrBbW.png" alt="Glock Drum" />
         <h2>🔫 Glock Drum w/ Switch + Beam – $10</h2>
         <p>Upgrade your street loadout. No cap.</p>
-        <button class="buy-button" onclick="addToCart('Glock Drum + Switch + Beam', 10)">Add to Cart</button>
+        <button class="buy-button" disabled>Add to Cart</button>
       </div>
 
       <div class="card">
+        <span class="out-of-stock">Out of Stock</span>
         <img src="https://i.imgur.com/GZNrBbW.png" alt="Blue Glock" />
         <h2>🔵 Blue Glock w/ Switch – $5</h2>
-        <p>Clean & custom. Quick pickup for your RP.</p>
-        <button class="buy-button" onclick="addToCart('Blue Glock + Switch', 5)">Add to Cart</button>
+        <p>Get 2 Blue Glocks with Switch and 10,000 ammo. Clean & custom for your RP grind.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
       </div>
 
     </section>
@@ -259,57 +275,13 @@
       <h3>🛒 Your Cart</h3>
       <div id="cart-items">No items yet.</div>
       <p id="total">Total: $0</p>
-      <button class="checkout-button" onclick="checkout()">Checkout</button>
+      <button class="checkout-button" disabled>Checkout</button>
       <div id="order-result" aria-live="polite"></div>
     </section>
 
     <footer>
-      📬 After purchase, send your Order ID in our <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener">Discord</a> for fast delivery.
+      📬 Our store is currently out of stock. Join our <a href="https://discord.gg/vReEWFQ2f7" target="_blank" rel="noopener">Discord</a> for updates!
     </footer>
   </div>
-
-<script>
-  const cart = [];
-  let total = 0;
-
-  function addToCart(item, price) {
-    cart.push({ item, price });
-    total += price;
-    updateCart();
-  }
-
-  function updateCart() {
-    if (cart.length === 0) {
-      document.getElementById("cart-items").innerText = "No items yet.";
-      document.getElementById("total").innerText = "Total: $0";
-      document.getElementById("order-result").innerText = "";
-      return;
-    }
-    const cartList = cart
-      .map(
-        (i, idx) =>
-          `<div><span>${idx + 1}. ${i.item}</span><span>$${i.price}</span></div>`
-      )
-      .join("");
-    document.getElementById("cart-items").innerHTML = cartList;
-    document.getElementById("total").innerText = `Total: $${total}`;
-    document.getElementById("order-result").innerText = "";
-  }
-
-  function checkout() {
-    if (cart.length === 0) {
-      alert("🛒 Your cart is empty!");
-      return;
-    }
-    const orderId =
-      "CS" + Math.floor(100000 + Math.random() * 900000).toString();
-    document.getElementById(
-      "order-result"
-    ).innerHTML = `✅ Order complete!<br>Your Order ID: <strong>${orderId}</strong><br>Send this ID in our Discord for delivery.`;
-    cart.length = 0;
-    total = 0;
-    updateCart();
-  }
-</script>
 </body>
 </html>
