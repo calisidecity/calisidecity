@@ -1,146 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CaliSide City RP Store</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0f0f0f;
-      color: #fff;
-    }
-    header {
-      background-color: #1a1a1a;
-      padding: 20px;
-      text-align: center;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CaliSide City RP Store</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #f0f0f0;
+    background: url('https://i.imgur.com/GZNrBbW.png') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+  }
+
+  /* Dark overlay for readability */
+  body::before {
+    content: "";
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(15,15,15,0.85);
+    z-index: 0;
+  }
+
+  /* Container */
+  #app {
+    position: relative;
+    z-index: 1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  header h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    text-shadow: 0 0 8px #007bffaa;
+  }
+
+  header p {
+    font-size: 1.2rem;
+    color: #bbb;
+  }
+
+  /* Products grid */
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px;
+  }
+
+  .card {
+    background: rgba(30,30,30,0.85);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(0,123,255,0.7);
+  }
+
+  .card img {
+    max-height: 160px;
+    object-fit: contain;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    background: #111;
+    padding: 10px;
+  }
+
+  .card h2 {
+    font-size: 1.5rem;
+    margin: 0 0 12px;
+    font-weight: 700;
+    color: #00aaff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card p {
+    flex-grow: 1;
+    color: #ccc;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  .buy-button {
+    background: #007bff;
+    border: none;
+    padding: 14px 0;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .buy-button:hover {
+    background: #005fbb;
+  }
+
+  /* Cart section */
+  .cart {
+    margin: 40px auto 0;
+    max-width: 480px;
+    background: rgba(25,25,25,0.9);
+    padding: 28px 30px;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+  }
+
+  .cart h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #00aaff;
+  }
+
+  #cart-items {
+    max-height: 220px;
+    overflow-y: auto;
+    background: #111;
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: #ddd;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  #cart-items div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  #total {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-top: 20px;
+    text-align: right;
+    color: #00d8ff;
+  }
+
+  .checkout-button {
+    margin-top: 28px;
+    background: #00aaff;
+    width: 100%;
+    border: none;
+    padding: 16px 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .checkout-button:hover {
+    background: #008fcc;
+  }
+
+  #order-result {
+    margin-top: 25px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #6fffdc;
+    text-align: center;
+    min-height: 50px;
+  }
+
+  footer {
+    margin-top: 60px;
+    padding: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #777;
+    letter-spacing: 1.2px;
+  }
+
+  a {
+    color: #00aaff;
+    text-decoration: underline;
+  }
+
+  /* Scrollbar for cart */
+  #cart-items::-webkit-scrollbar {
+    width: 8px;
+  }
+  #cart-items::-webkit-scrollbar-track {
+    background: #111;
+  }
+  #cart-items::-webkit-scrollbar-thumb {
+    background: #007bffaa;
+    border-radius: 6px;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
     header h1 {
-      font-size: 2rem;
-    }
-    .products {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 20px;
-      gap: 20px;
-    }
-    .card {
-      background-color: #1e1e1e;
-      border-radius: 10px;
-      padding: 15px;
-      width: 300px;
-      box-shadow: 0 0 10px #000;
-    }
-    .card img {
-      width: 100%;
-      border-radius: 8px;
-    }
-    .card h2 {
-      margin-top: 10px;
-      font-size: 1.3rem;
-    }
-    .card p {
-      font-size: 0.95rem;
-    }
-    .buy-button, .checkout-button {
-      margin-top: 10px;
-      padding: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
+      font-size: 2.4rem;
     }
     .cart {
-      background: #121212;
+      max-width: 90vw;
       padding: 20px;
-      margin: 0 auto;
-      max-width: 400px;
-      border-radius: 8px;
     }
-    .cart h3 {
-      margin-top: 0;
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      background: #1a1a1a;
-      margin-top: 40px;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
+  <div id="app">
+    <header>
+      <h1>🛒 CaliSide City RP Store</h1>
+      <p>🔥 Built for the city. Powered by the streets.</p>
+    </header>
 
-  <header>
-    <h1>🛒 CaliSide City RP Store</h1>
-    <p>🔥 Built for the city. Powered by the streets.</p>
-  </header>
+    <section class="products">
 
-  <section class="products">
+      <div class="card">
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="1M Coins" />
+        <h2>💰 1M Coins – $15</h2>
+        <p>Buy big stacks for your grind. Delivered instantly.</p>
+        <button class="buy-button" onclick="addToCart('1M Coins', 15)">Add to Cart</button>
+      </div>
 
-    <div class="card">
-      <img src="https://imgur.com/GZNrBbW.png" alt="1M Coins">
-      <h2>💰 1M Coins – $15</h2>
-      <p>Buy big stacks for your grind. Delivered instantly.</p>
-      <button class="buy-button" onclick="addToCart('1M Coins', 15)">Add to Cart</button>
-    </div>
+      <div class="card">
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Glock Drum" />
+        <h2>🔫 Glock Drum w/ Switch + Beam – $10</h2>
+        <p>Upgrade your street loadout. No cap.</p>
+        <button class="buy-button" onclick="addToCart('Glock Drum + Switch + Beam', 10)">Add to Cart</button>
+      </div>
 
-    <div class="card">
-      <img src="https://imgur.com/GZNrBbW.png" alt="Glock Drum">
-      <h2>🔫 Glock Drum w/ Switch + Beam – $10</h2>
-      <p>Upgrade your street loadout. No cap.</p>
-      <button class="buy-button" onclick="addToCart('Glock Drum + Switch + Beam', 10)">Add to Cart</button>
-    </div>
+      <div class="card">
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Blue Glock" />
+        <h2>🔵 Blue Glock w/ Switch – $5</h2>
+        <p>Clean & custom. Quick pickup for your RP.</p>
+        <button class="buy-button" onclick="addToCart('Blue Glock + Switch', 5)">Add to Cart</button>
+      </div>
 
-    <div class="card">
-      <img src="https://imgur.com/GZNrBbW.png" alt="Blue Glock">
-      <h2>🔵 Blue Glock w/ Switch – $5</h2>
-      <p>Clean & custom. Quick pickup for your RP.</p>
-      <button class="buy-button" onclick="addToCart('Blue Glock + Switch', 5)">Add to Cart</button>
-    </div>
+    </section>
 
-  </section>
+    <section class="cart" aria-label="Shopping cart">
+      <h3>🛒 Your Cart</h3>
+      <div id="cart-items">No items yet.</div>
+      <p id="total">Total: $0</p>
+      <button class="checkout-button" onclick="checkout()">Checkout</button>
+      <div id="order-result" aria-live="polite"></div>
+    </section>
 
-  <section class="cart">
-    <h3>🛒 Your Cart</h3>
-    <div id="cart-items">No items yet.</div>
-    <p id="total">Total: $0</p>
-    <button class="checkout-button" onclick="checkout()">Checkout</button>
-    <div id="order-result" style="margin-top:15px;"></div>
-  </section>
+    <footer>
+      📬 After purchase, send your Order ID in our <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener">Discord</a> for fast delivery.
+    </footer>
+  </div>
 
-  <footer>
-    📬 After purchase, send your Order ID in our <strong>Discord</strong> for fast delivery.
-  </footer>
+<script>
+  const cart = [];
+  let total = 0;
 
-  <script>
-    const cart = [];
-    let total = 0;
+  function addToCart(item, price) {
+    cart.push({ item, price });
+    total += price;
+    updateCart();
+  }
 
-    function addToCart(item, price) {
-      cart.push({ item, price });
-      total += price;
-      updateCart();
+  function updateCart() {
+    if (cart.length === 0) {
+      document.getElementById("cart-items").innerText = "No items yet.";
+      document.getElementById("total").innerText = "Total: $0";
+      document.getElementById("order-result").innerText = "";
+      return;
     }
+    const cartList = cart
+      .map(
+        (i, idx) =>
+          `<div><span>${idx + 1}. ${i.item}</span><span>$${i.price}</span></div>`
+      )
+      .join("");
+    document.getElementById("cart-items").innerHTML = cartList;
+    document.getElementById("total").innerText = `Total: $${total}`;
+    document.getElementById("order-result").innerText = "";
+  }
 
-    function updateCart() {
-      const cartList = cart.map(i => `• ${i.item} – $${i.price}`).join('<br>');
-      document.getElementById("cart-items").innerHTML = cartList;
-      document.getElementById("total").innerText = "Total: $" + total;
+  function checkout() {
+    if (cart.length === 0) {
+      alert("🛒 Your cart is empty!");
+      return;
     }
-
-    function checkout() {
-      if (cart.length === 0) {
-        alert("🛒 Your cart is empty!");
-        return;
-      }
-      const orderId = 'CS' + Math.floor(100000 + Math.random() * 900000);
-      document.getElementById("order-result").innerHTML = `✅ Order complete!<br>Your Order ID: <strong>${orderId}</strong><br>Send this ID in our Discord for delivery.`;
-    }
-  </script>
-
+    const orderId =
+      "CS" + Math.floor(100000 + Math.random() * 900000).toString();
+    document.getElementById(
+      "order-result"
+    ).innerHTML = `✅ Order complete!<br>Your Order ID: <strong>${orderId}</strong><br>Send this ID in our Discord for delivery.`;
+    cart.length = 0;
+    total = 0;
+    updateCart();
+  }
+</script>
 </body>
 </html>
