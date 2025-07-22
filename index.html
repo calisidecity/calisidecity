@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CaliSide City RP Store with Login & Cart</title>
+<title>CaliSide City RP Store with Login & Floating Cart</title>
 <style>
   * {
     box-sizing: border-box;
@@ -47,64 +47,100 @@
     font-size: 1.2rem;
     color: #bbb;
   }
-  /* Blur overlay for locked view */
-  #blur-overlay {
+
+  /* Floating cart */
+  #floating-cart {
     position: fixed;
-    top:0; left:0; right:0; bottom:0;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(8px);
-    z-index: 200;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #00aaff;
+    top: 20px;
+    right: 20px;
+    width: 320px;
+    max-height: 400px;
+    background: rgba(30,30,30,0.95);
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
     padding: 20px;
+    z-index: 150;
+    color: #ddd;
+    display: none;
+    flex-direction: column;
+  }
+  #floating-cart h3 {
+    color: #00aaff;
+    margin: 0 0 15px 0;
+    font-size: 1.8rem;
     text-align: center;
   }
-  #blur-overlay h2 {
-    font-size: 2.8rem;
-    margin-bottom: 18px;
-  }
-  #blur-overlay input {
-    width: 280px;
-    max-width: 90vw;
-    padding: 14px 18px;
-    margin: 8px 0;
+  #cart-items {
+    flex-grow: 1;
+    overflow-y: auto;
+    background: #111;
+    padding: 15px 20px;
+    border-radius: 10px;
     font-size: 1.1rem;
-    border-radius: 8px;
-    border: none;
-    outline: none;
+    line-height: 1.5;
+    margin-bottom: 15px;
   }
-  #blur-overlay button {
-    width: 300px;
-    max-width: 90vw;
-    margin-top: 15px;
-    background: #00aaff;
+  #cart-items div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  #total {
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: right;
+    color: #00d8ff;
+    margin-bottom: 15px;
+  }
+  #checkout-btn {
+    background: #007bff;
+    width: 100%;
     border: none;
     padding: 16px 0;
-    border-radius: 10px;
-    font-weight: 700;
     font-size: 1.3rem;
+    font-weight: 800;
     color: white;
+    border-radius: 12px;
     cursor: pointer;
     transition: background 0.3s ease;
   }
-  #blur-overlay button:hover {
-    background: #008fcc;
+  #checkout-btn:disabled {
+    background: #555;
+    color: #bbb;
+    cursor: not-allowed;
   }
-  #blur-overlay small {
-    display: block;
-    margin-top: 12px;
-    color: #888;
-    font-size: 0.85rem;
+  #checkout-btn:hover:not(:disabled) {
+    background: #005fbb;
   }
-  #blur-message {
-    color: #ff5555;
-    margin-top: 8px;
+  #cart-toggle-btn {
+    position: fixed;
+    top: 20px;
+    right: 360px;
+    background: #007bff;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    color: white;
     font-weight: 700;
-    min-height: 1.2rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,123,255,0.7);
+    z-index: 200;
   }
+  #cart-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #cc0000;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    box-shadow: 0 0 6px #cc0000bb;
+  }
+
   /* Login/Register */
   #dashboard-section {
     max-width: 940px;
@@ -114,6 +150,7 @@
     border-radius: 14px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.7);
     display: none;
+    color: #ddd;
   }
   #dashboard-section h2 {
     color: #00aaff;
@@ -136,6 +173,7 @@
   #logout-btn:hover {
     background: #990000;
   }
+
   /* Products grid */
   .products {
     display: grid;
@@ -197,167 +235,128 @@
     box-shadow: 0 0 10px #cc0000bb;
   }
   .buy-button {
-    background: #007bff;
+    background: #555;
     border: none;
     padding: 14px 0;
     border-radius: 8px;
-    color: white;
+    color: #bbb;
     font-weight: 700;
     font-size: 1.1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  .buy-button:disabled {
-    background: #555;
-    color: #bbb;
     cursor: not-allowed;
   }
-  .buy-button:hover:not(:disabled) {
+  .buy-button.enabled {
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  .buy-button.enabled:hover {
     background: #005fbb;
   }
-  /* Fixed Cart Icon Top Right */
-  #cart-icon {
+
+  /* Modal */
+  #modal-overlay {
+    display:none;
+    position:fixed;
+    z-index:1000;
+    left:0; top:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(4px);
+    align-items:center;
+    justify-content:center;
+  }
+  #modal {
+    background:#222;
+    padding:32px 28px;
+    border-radius:16px;
+    box-shadow:0 0 30px #00aaffaa;
+    max-width:400px;
+    color:#0ff;
+    text-align:center;
+  }
+  #modal h2 {
+    margin-top:0;
+    margin-bottom:16px;
+    font-size:2rem;
+    color:#00ccff;
+  }
+  #modal p {
+    font-size:1.2rem;
+    margin-bottom:24px;
+  }
+  #modal button {
+    background:#00aaff;
+    border:none;
+    padding:12px 24px;
+    border-radius:12px;
+    font-weight:700;
+    font-size:1.1rem;
+    color:white;
+    cursor:pointer;
+    transition:background 0.3s ease;
+  }
+  #modal button:hover {
+    background:#008fcc;
+  }
+
+  /* Blur login/preview overlay */
+  #blur-overlay {
     position: fixed;
-    top: 16px;
-    right: 16px;
-    width: 50px;
-    height: 50px;
-    background: #007bff;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 15px #007bffcc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 300;
-  }
-  #cart-icon svg {
-    fill: white;
-    width: 28px;
-    height: 28px;
-  }
-  #cart-count {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: #cc0000;
-    color: white;
-    font-weight: 700;
-    font-size: 14px;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-    box-shadow: 0 0 10px #cc0000bb;
-  }
-  /* Slide-in Cart Panel */
-  #cart-panel {
-    position: fixed;
-    top: 0;
-    right: -420px;
-    width: 400px;
-    height: 100%;
-    background: rgba(25,25,25,0.95);
-    box-shadow: -4px 0 30px rgba(0,0,0,0.9);
-    border-left: 3px solid #007bff;
-    padding: 30px 24px;
-    transition: right 0.3s ease;
-    z-index: 299;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
     display: flex;
     flex-direction: column;
-  }
-  #cart-panel.open {
-    right: 0;
-  }
-  #cart-panel h3 {
-    font-size: 2rem;
-    margin-bottom: 20px;
+    justify-content: center;
+    align-items: center;
     color: #00aaff;
+    padding: 20px;
     text-align: center;
   }
-  #cart-items {
-    flex-grow: 1;
-    overflow-y: auto;
-    background: #111;
-    padding: 15px 20px;
-    border-radius: 10px;
-    color: #ddd;
+  #blur-overlay h2 {
+    font-size: 2.8rem;
+    margin-bottom: 18px;
+  }
+  #blur-overlay input {
+    width: 280px;
+    max-width: 90vw;
+    padding: 14px 18px;
+    margin: 8px 0;
     font-size: 1.1rem;
-    line-height: 1.5;
-    margin-bottom: 20px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
   }
-  #cart-items div {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  #total {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-align: right;
-    color: #00d8ff;
-  }
-  .checkout-button {
-    background: #007bff;
-    width: 100%;
+  #blur-overlay button {
+    width: 300px;
+    max-width: 90vw;
+    margin-top: 15px;
+    background: #00aaff;
     border: none;
     padding: 16px 0;
+    border-radius: 10px;
+    font-weight: 700;
     font-size: 1.3rem;
-    font-weight: 800;
     color: white;
-    border-radius: 12px;
     cursor: pointer;
     transition: background 0.3s ease;
   }
-  .checkout-button:disabled {
-    background: #555;
-    color: #bbb;
-    cursor: not-allowed;
+  #blur-overlay button:hover {
+    background: #008fcc;
   }
-  .checkout-button:hover:not(:disabled) {
-    background: #005fbb;
+  #blur-overlay small {
+    display: block;
+    margin-top: 12px;
+    color: #888;
+    font-size: 0.85rem;
   }
-  /* Close Cart Button */
-  #close-cart-btn {
-    background: transparent;
-    border: none;
-    color: #00aaff;
-    font-size: 1.5rem;
+  #blur-message {
+    color: #ff5555;
+    margin-top: 8px;
     font-weight: 700;
-    cursor: pointer;
-    align-self: flex-end;
-    margin-bottom: 10px;
+    min-height: 1.2rem;
   }
-  #close-cart-btn:hover {
-    color: #008fcc;
-  }
-  footer {
-    margin-top: 60px;
-    padding: 20px;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #777;
-    letter-spacing: 1.2px;
-  }
-  a {
-    color: #00aaff;
-    text-decoration: underline;
-  }
-  /* Scrollbars */
-  #cart-items::-webkit-scrollbar {
-    width: 8px;
-  }
-  #cart-items::-webkit-scrollbar-track {
-    background: #111;
-  }
-  #cart-items::-webkit-scrollbar-thumb {
-    background: #007bffaa;
-    border-radius: 6px;
-  }
+
   /* Responsive */
   @media (max-width: 480px) {
     header h1 {
@@ -366,18 +365,26 @@
     #dashboard-section {
       max-width: 90vw;
     }
-    #cart-panel {
+    #floating-cart {
       width: 90vw;
+      max-height: 50vh;
+      top: auto;
+      bottom: 20px;
+      right: 20px;
+    }
+    #cart-toggle-btn {
+      right: 20px;
+      top: auto;
+      bottom: 80px;
     }
   }
 </style>
 </head>
 <body>
   <div id="app" aria-live="polite">
-
     <header>
       <h1>🛒 CaliSide City RP Store</h1>
-      <p>🔥 All items currently out of stock — stay tuned for restocks!</p>
+      <p>🔥 Welcome! Add items to your cart and checkout securely.</p>
     </header>
 
     <!-- User Dashboard -->
@@ -388,33 +395,26 @@
 
     <!-- Products -->
     <section class="products" aria-label="Products for sale">
-      <!-- Cards will be populated by JS -->
+      <!-- Cards inserted by JS -->
     </section>
 
-    <footer>
-      📬 Join our <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener">Discord</a> for updates and support!
-    </footer>
+    <!-- Floating Cart Toggle Button -->
+    <button id="cart-toggle-btn" aria-label="Toggle Cart">
+      🛒 <span id="cart-count">0</span>
+    </button>
+
+    <!-- Floating Cart -->
+    <div id="floating-cart" aria-label="Shopping cart">
+      <h3>🛒 Your Cart</h3>
+      <div id="cart-items">No items yet.</div>
+      <p id="total">Total: $0</p>
+      <button id="checkout-btn" disabled>Checkout</button>
+    </div>
 
   </div>
-
-  <!-- Cart Icon -->
-  <div id="cart-icon" aria-label="Shopping Cart" role="button" tabindex="0">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h-2l-3 9v7a1 1 0 001 1h16a1 1 0 001-1v-7l-3-9h-2"></path><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle></svg>
-    <div id="cart-count" aria-live="polite" aria-atomic="true">0</div>
-  </div>
-
-  <!-- Cart Panel -->
-  <aside id="cart-panel" aria-label="Shopping cart panel" role="region" aria-hidden="true">
-    <button id="close-cart-btn" aria-label="Close cart">&times;</button>
-    <h3>🛒 Your Cart</h3>
-    <div id="cart-items">No items yet.</div>
-    <p id="total">Total: $0</p>
-    <button class="checkout-button" id="checkout-btn" disabled>Checkout</button>
-    <div id="order-result" aria-live="polite"></div>
-  </aside>
 
   <!-- Modal for order ID -->
-  <div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc" style="display:none; position:fixed; z-index:400; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+  <div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
     <div id="modal">
       <h2 id="modal-title">✅ Order Complete!</h2>
       <p id="modal-desc">
@@ -430,4 +430,269 @@
   <div id="blur-overlay" role="dialog" aria-modal="true" aria-labelledby="blur-title" aria-describedby="blur-desc" >
     <h2 id="blur-title">Welcome to CaliSide City RP Store</h2>
     <input type="text" id="login-username" placeholder="Username" aria-label="Username" autocomplete="username" />
-    <input type="password" id="login-password" placeholder="Password" aria-label
+    <input type="password" id="login-password" placeholder="Password" aria-label="Password" autocomplete="current-password" />
+    <button id="login-btn">Sign In / Register</button>
+    <button id="preview-btn" style="margin-top: 12px; background: #444;">Preview Without Login</button>
+    <small>Sign in to access your dashboard and orders.</small>
+    <div id="blur-message" role="alert" aria-live="assertive"></div>
+  </div>
+
+<script>
+  // Elements
+  const blurOverlay = document.getElementById('blur-overlay');
+  const loginUsername = document.getElementById('login-username');
+  const loginPassword = document.getElementById('login-password');
+  const loginBtn = document.getElementById('login-btn');
+  const previewBtn = document.getElementById('preview-btn');
+  const blurMessage = document.getElementById('blur-message');
+
+  const dashboardSection = document.getElementById('dashboard-section');
+  const userDisplay = document.getElementById('user-display');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  const productsSection = document.querySelector('.products');
+
+  const cartToggleBtn = document.getElementById('cart-toggle-btn');
+  const floatingCart = document.getElementById('floating-cart');
+  const cartItems = document.getElementById('cart-items');
+  const totalDisplay = document.getElementById('total');
+  const checkoutBtn = document.getElementById('checkout-btn');
+  const cartCountSpan = document.getElementById('cart-count');
+
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalOrderId = document.getElementById('modal-order-id');
+
+  // Data
+  let currentUser = null;
+  let users = JSON.parse(localStorage.getItem('csc_rp_users') || '{}'); // { username: password }
+  let cart = [];
+  let total = 0;
+
+  // Products with stock > 0 so buy buttons enabled for testing
+  const products = [
+    { id: 1, name: '1M Coins', price: 15, desc: 'Buy big stacks for your grind. Delivered instantly.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 5 },
+    { id: 2, name: 'Glock Drum w/ Switch + Beam', price: 10, desc: 'Upgrade your street loadout. No cap.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 3 },
+    { id: 3, name: 'Blue Glock w/ Switch (2 pcs + 10k Ammo)', price: 5, desc: 'Clean & custom for your RP grind.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 8 },
+  ];
+
+  // --- Functions ---
+
+  // Blur / unblur site
+  function blurSite() {
+    document.getElementById('app').style.filter = 'blur(8px) brightness(0.7)';
+    blurOverlay.style.display = 'flex';
+  }
+  function unblurSite() {
+    document.getElementById('app').style.filter = 'none';
+    blurOverlay.style.display = 'none';
+  }
+
+  // Render products
+  function renderProducts() {
+    productsSection.innerHTML = '';
+    products.forEach((product, i) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      // Out of stock label if stock=0
+      if(product.stock === 0) {
+        const outLabel = document.createElement('span');
+        outLabel.className = 'out-of-stock';
+        outLabel.textContent = 'Out of Stock';
+        card.appendChild(outLabel);
+      }
+
+      const img = document.createElement('img');
+      img.src = product.img;
+      img.alt = product.name;
+      card.appendChild(img);
+
+      const h2 = document.createElement('h2');
+      h2.textContent = product.name;
+      card.appendChild(h2);
+
+      const p = document.createElement('p');
+      p.textContent = product.desc;
+      card.appendChild(p);
+
+      const btn = document.createElement('button');
+      btn.textContent = `Buy for $${product.price}`;
+      btn.disabled = product.stock === 0;
+      btn.className = 'buy-button';
+      if(product.stock > 0) btn.classList.add('enabled');
+
+      btn.addEventListener('click', () => addToCart(product.id));
+
+      card.appendChild(btn);
+
+      productsSection.appendChild(card);
+    });
+  }
+
+  // Add item to cart
+  function addToCart(id) {
+    if(!currentUser) {
+      alert('Please log in to add items to cart.');
+      return;
+    }
+    const product = products.find(p => p.id === id);
+    if(!product || product.stock === 0) {
+      alert('Product out of stock.');
+      return;
+    }
+    // Add or increase quantity in cart
+    const cartItem = cart.find(i => i.id === id);
+    if(cartItem) {
+      if(cartItem.qty < product.stock) {
+        cartItem.qty++;
+      } else {
+        alert('Reached max stock for this item.');
+        return;
+      }
+    } else {
+      cart.push({ id: id, qty: 1 });
+    }
+    renderCart();
+    alert(`Added 1 x ${product.name} to your cart.`);
+  }
+
+  // Render cart
+  function renderCart() {
+    if(cart.length === 0) {
+      cartItems.textContent = 'No items yet.';
+      totalDisplay.textContent = 'Total: $0';
+      checkoutBtn.disabled = true;
+      cartCountSpan.textContent = '0';
+      return;
+    }
+    cartCountSpan.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
+    cartItems.innerHTML = '';
+    total = 0;
+    cart.forEach(item => {
+      const product = products.find(p => p.id === item.id);
+      if(product) {
+        const div = document.createElement('div');
+        div.textContent = `${item.qty} x ${product.name}`;
+        const priceSpan = document.createElement('span');
+        const priceForQty = product.price * item.qty;
+        priceSpan.textContent = `$${priceForQty.toFixed(2)}`;
+        div.appendChild(priceSpan);
+        cartItems.appendChild(div);
+        total += priceForQty;
+      }
+    });
+    totalDisplay.textContent = `Total: $${total.toFixed(2)}`;
+    checkoutBtn.disabled = false;
+  }
+
+  // Login or register user
+  function loginUser() {
+    const username = loginUsername.value.trim();
+    const password = loginPassword.value.trim();
+    blurMessage.textContent = '';
+
+    if(username.length < 3 || password.length < 3) {
+      blurMessage.textContent = 'Username and password must be at least 3 characters.';
+      return;
+    }
+
+    // Register new user if not exists
+    if(!users[username]) {
+      users[username] = password;
+      localStorage.setItem('csc_rp_users', JSON.stringify(users));
+      currentUser = username;
+      alert(`New user "${username}" registered successfully!`);
+      afterLogin();
+      return;
+    }
+
+    // User exists, check password
+    if(users[username] === password) {
+      currentUser = username;
+      afterLogin();
+    } else {
+      blurMessage.textContent = 'Incorrect password. Try again.';
+    }
+  }
+
+  // After successful login or preview
+  function afterLogin(preview=false) {
+    unblurSite();
+    if(preview) {
+      userDisplay.textContent = 'Preview Mode';
+      dashboardSection.style.display = 'block';
+    } else {
+      userDisplay.textContent = currentUser;
+      dashboardSection.style.display = 'block';
+    }
+    cart = [];
+    renderCart();
+    renderProducts();
+  }
+
+  // Logout user
+  function logoutUser() {
+    currentUser = null;
+    cart = [];
+    dashboardSection.style.display = 'none';
+    renderCart();
+    blurOverlay.style.display = 'flex';
+  }
+
+  // Checkout (simulate order)
+  function checkout() {
+    if(cart.length === 0) return;
+    // Generate random order ID
+    const orderId = `CSC-${Math.random().toString(36).substr(2,9).toUpperCase()}`;
+    modalOrderId.textContent = orderId;
+    modalOverlay.style.display = 'flex';
+  }
+
+  function closeModal() {
+    modalOverlay.style.display = 'none';
+    cart = [];
+    renderCart();
+  }
+
+  // Toggle cart visibility
+  function toggleCart() {
+    if(floatingCart.style.display === 'flex') {
+      floatingCart.style.display = 'none';
+    } else {
+      floatingCart.style.display = 'flex';
+    }
+  }
+
+  // Event Listeners
+  loginBtn.addEventListener('click', loginUser);
+  logoutBtn.addEventListener('click', logoutUser);
+  checkoutBtn.addEventListener('click', checkout);
+  cartToggleBtn.addEventListener('click', toggleCart);
+
+  previewBtn.addEventListener('click', () => {
+    afterLogin(true);
+    blurOverlay.style.display = 'none';
+  });
+
+  // Keyboard accessibility for cart toggle
+  cartToggleBtn.addEventListener('keydown', e => {
+    if(e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleCart();
+    }
+  });
+
+  // Keyboard accessibility for login button on blur overlay
+  loginPassword.addEventListener('keydown', e => {
+    if(e.key === 'Enter') loginUser();
+  });
+  loginUsername.addEventListener('keydown', e => {
+    if(e.key === 'Enter') loginUser();
+  });
+
+  // Initialize
+  blurSite();
+  renderProducts();
+</script>
+</body>
+</html>
