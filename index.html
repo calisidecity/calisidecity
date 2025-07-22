@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CaliSide City RP Store with Login & Floating Cart</title>
+<title>CaliSide City RP Store with Login & Cart</title>
 <style>
   * {
     box-sizing: border-box;
@@ -48,57 +48,77 @@
     color: #bbb;
   }
 
-  /* Floating cart */
-  #floating-cart {
+  /* Cart icon top right */
+  #cart-icon {
     position: fixed;
-    top: 20px;
+    top: 18px;
+    right: 20px;
+    background: #007bffcc;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    border-radius: 24px;
+    padding: 10px 16px;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px #007bffbb;
+  }
+  #cart-count {
+    background: #ff4444;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 800;
+    user-select: none;
+  }
+
+  /* Cart dropdown */
+  #cart-dropdown {
+    display: none;
+    position: fixed;
+    top: 56px;
     right: 20px;
     width: 320px;
     max-height: 400px;
-    background: rgba(30,30,30,0.95);
-    border-radius: 14px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    background: rgba(25,25,25,0.95);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.9);
+    border-radius: 12px;
     padding: 20px;
-    z-index: 150;
-    color: #ddd;
-    display: none;
-    flex-direction: column;
+    overflow-y: auto;
+    z-index: 1001;
   }
-  #floating-cart h3 {
+  #cart-dropdown h3 {
+    margin-top: 0;
     color: #00aaff;
-    margin: 0 0 15px 0;
-    font-size: 1.8rem;
     text-align: center;
   }
   #cart-items {
-    flex-grow: 1;
-    overflow-y: auto;
-    background: #111;
-    padding: 15px 20px;
-    border-radius: 10px;
+    color: #ddd;
     font-size: 1.1rem;
-    line-height: 1.5;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
   }
   #cart-items div {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
-  #total {
-    font-size: 1.6rem;
+  #cart-total {
     font-weight: 700;
-    text-align: right;
+    font-size: 1.3rem;
     color: #00d8ff;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    text-align: right;
   }
   #checkout-btn {
-    background: #007bff;
     width: 100%;
-    border: none;
-    padding: 16px 0;
-    font-size: 1.3rem;
+    padding: 14px 0;
     font-weight: 800;
+    font-size: 1.2rem;
+    background: #007bff;
+    border: none;
     color: white;
     border-radius: 12px;
     cursor: pointer;
@@ -106,72 +126,10 @@
   }
   #checkout-btn:disabled {
     background: #555;
-    color: #bbb;
     cursor: not-allowed;
   }
   #checkout-btn:hover:not(:disabled) {
     background: #005fbb;
-  }
-  #cart-toggle-btn {
-    position: fixed;
-    top: 20px;
-    right: 360px;
-    background: #007bff;
-    border: none;
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    color: white;
-    font-weight: 700;
-    font-size: 1.25rem;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,123,255,0.7);
-    z-index: 200;
-  }
-  #cart-count {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: #cc0000;
-    color: white;
-    border-radius: 50%;
-    padding: 3px 8px;
-    font-size: 0.85rem;
-    font-weight: 800;
-    box-shadow: 0 0 6px #cc0000bb;
-  }
-
-  /* Login/Register */
-  #dashboard-section {
-    max-width: 940px;
-    margin: 0 auto 40px;
-    background: rgba(30,30,30,0.9);
-    padding: 28px 30px;
-    border-radius: 14px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
-    display: none;
-    color: #ddd;
-  }
-  #dashboard-section h2 {
-    color: #00aaff;
-    margin-bottom: 18px;
-    text-align: center;
-  }
-  #logout-btn {
-    display: block;
-    margin: 0 auto 20px auto;
-    background: #cc0000;
-    border: none;
-    padding: 14px 0;
-    border-radius: 8px;
-    color: white;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    width: 180px;
-  }
-  #logout-btn:hover {
-    background: #990000;
   }
 
   /* Products grid */
@@ -234,22 +192,23 @@
     user-select: none;
     box-shadow: 0 0 10px #cc0000bb;
   }
-  .buy-button {
-    background: #555;
+  .btn {
+    background: #007bff;
     border: none;
     padding: 14px 0;
     border-radius: 8px;
-    color: #bbb;
+    color: white;
     font-weight: 700;
     font-size: 1.1rem;
-    cursor: not-allowed;
-  }
-  .buy-button.enabled {
-    background: #007bff;
-    color: white;
     cursor: pointer;
+    transition: background 0.3s ease;
   }
-  .buy-button.enabled:hover {
+  .btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+    color: #bbb;
+  }
+  .btn:hover:not(:disabled) {
     background: #005fbb;
   }
 
@@ -257,7 +216,7 @@
   #modal-overlay {
     display:none;
     position:fixed;
-    z-index:1000;
+    z-index:10000;
     left:0; top:0; right:0; bottom:0;
     background:rgba(0,0,0,0.75);
     backdrop-filter:blur(4px);
@@ -282,6 +241,7 @@
   #modal p {
     font-size:1.2rem;
     margin-bottom:24px;
+    word-break: break-word;
   }
   #modal button {
     background:#00aaff;
@@ -302,9 +262,9 @@
   #blur-overlay {
     position: fixed;
     top:0; left:0; right:0; bottom:0;
-    background: rgba(0,0,0,0.75);
+    background: rgba(0,0,0,0.85);
     backdrop-filter: blur(8px);
-    z-index: 2000;
+    z-index: 100000;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -357,57 +317,59 @@
     min-height: 1.2rem;
   }
 
+  footer {
+    margin-top: 60px;
+    padding: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #777;
+    letter-spacing: 1.2px;
+  }
+  a {
+    color: #00aaff;
+    text-decoration: underline;
+  }
+
   /* Responsive */
   @media (max-width: 480px) {
     header h1 {
       font-size: 2.4rem;
     }
-    #dashboard-section {
-      max-width: 90vw;
-    }
-    #floating-cart {
+    #cart-dropdown {
       width: 90vw;
-      max-height: 50vh;
-      top: auto;
-      bottom: 20px;
-      right: 20px;
+      right: 5vw;
     }
-    #cart-toggle-btn {
-      right: 20px;
-      top: auto;
-      bottom: 80px;
+    #blur-overlay input,
+    #blur-overlay button {
+      width: 90vw;
+      max-width: none;
     }
   }
 </style>
 </head>
 <body>
   <div id="app" aria-live="polite">
+
     <header>
       <h1>🛒 CaliSide City RP Store</h1>
-      <p>🔥 Welcome! Add items to your cart and checkout securely.</p>
+      <p>🔥 All items currently out of stock — stay tuned for restocks!</p>
     </header>
 
-    <!-- User Dashboard -->
-    <section id="dashboard-section" aria-label="User Dashboard">
-      <h2>Welcome, <span id="user-display"></span>!</h2>
-      <button id="logout-btn">Logout</button>
-    </section>
-
     <!-- Products -->
-    <section class="products" aria-label="Products for sale">
-      <!-- Cards inserted by JS -->
+    <section class="products" aria-label="Products for sale" id="products-container">
+      <!-- Products will be injected here -->
     </section>
 
-    <!-- Floating Cart Toggle Button -->
-    <button id="cart-toggle-btn" aria-label="Toggle Cart">
-      🛒 <span id="cart-count">0</span>
-    </button>
+    <!-- Cart icon -->
+    <div id="cart-icon" aria-label="Shopping Cart" tabindex="0" role="button" aria-expanded="false" aria-controls="cart-dropdown">
+      🛒 Cart <span id="cart-count">0</span>
+    </div>
 
-    <!-- Floating Cart -->
-    <div id="floating-cart" aria-label="Shopping cart">
-      <h3>🛒 Your Cart</h3>
+    <!-- Cart dropdown -->
+    <div id="cart-dropdown" aria-label="Your shopping cart">
+      <h3>Your Cart</h3>
       <div id="cart-items">No items yet.</div>
-      <p id="total">Total: $0</p>
+      <div id="cart-total">Total: $0</div>
       <button id="checkout-btn" disabled>Checkout</button>
     </div>
 
@@ -419,7 +381,7 @@
       <h2 id="modal-title">✅ Order Complete!</h2>
       <p id="modal-desc">
         Please send this Order ID in a ticket on our Discord for fast delivery:<br/><br/>
-        <strong id="modal-order-id" style="word-break:break-word;"></strong><br/><br/>
+        <strong id="modal-order-id"></strong><br/><br/>
         Discord: <a href="https://discord.gg/FkqyasFRAs" target="_blank" style="color:#0ff; text-decoration:underline;">https://discord.gg/FkqyasFRAs</a>
       </p>
       <button onclick="closeModal()">Got it!</button>
@@ -438,7 +400,7 @@
   </div>
 
 <script>
-  // Elements
+  // --- Elements ---
   const blurOverlay = document.getElementById('blur-overlay');
   const loginUsername = document.getElementById('login-username');
   const loginPassword = document.getElementById('login-password');
@@ -446,60 +408,43 @@
   const previewBtn = document.getElementById('preview-btn');
   const blurMessage = document.getElementById('blur-message');
 
-  const dashboardSection = document.getElementById('dashboard-section');
-  const userDisplay = document.getElementById('user-display');
-  const logoutBtn = document.getElementById('logout-btn');
-
-  const productsSection = document.querySelector('.products');
-
-  const cartToggleBtn = document.getElementById('cart-toggle-btn');
-  const floatingCart = document.getElementById('floating-cart');
+  const productsContainer = document.getElementById('products-container');
+  const cartIcon = document.getElementById('cart-icon');
+  const cartDropdown = document.getElementById('cart-dropdown');
+  const cartCount = document.getElementById('cart-count');
   const cartItems = document.getElementById('cart-items');
-  const totalDisplay = document.getElementById('total');
+  const cartTotal = document.getElementById('cart-total');
   const checkoutBtn = document.getElementById('checkout-btn');
-  const cartCountSpan = document.getElementById('cart-count');
 
   const modalOverlay = document.getElementById('modal-overlay');
   const modalOrderId = document.getElementById('modal-order-id');
 
-  // Data
+  // --- Data ---
+  const products = [
+    { id: 1, name: '1000 Coins', price: 10, desc: 'Buy a quick stack of 1000 coins. Instant delivery.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
+    { id: 2, name: 'Glock Drum w/ Switch + Beam', price: 10, desc: 'Upgrade your street loadout. No cap.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
+    { id: 3, name: 'Blue Glock w/ Switch (2 pcs + 10k Ammo)', price: 5, desc: 'Clean & custom for your RP grind.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 0 },
+  ];
+
+  let cart = [];
   let currentUser = null;
   let users = JSON.parse(localStorage.getItem('csc_rp_users') || '{}'); // { username: password }
-  let cart = [];
-  let total = 0;
-
-  // Products with stock > 0 so buy buttons enabled for testing
-  const products = [
-    { id: 1, name: '1M Coins', price: 15, desc: 'Buy big stacks for your grind. Delivered instantly.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 5 },
-    { id: 2, name: 'Glock Drum w/ Switch + Beam', price: 10, desc: 'Upgrade your street loadout. No cap.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 3 },
-    { id: 3, name: 'Blue Glock w/ Switch (2 pcs + 10k Ammo)', price: 5, desc: 'Clean & custom for your RP grind.', img: 'https://i.imgur.com/GZNrBbW.png', stock: 8 },
-  ];
 
   // --- Functions ---
 
-  // Blur / unblur site
-  function blurSite() {
-    document.getElementById('app').style.filter = 'blur(8px) brightness(0.7)';
-    blurOverlay.style.display = 'flex';
-  }
-  function unblurSite() {
-    document.getElementById('app').style.filter = 'none';
-    blurOverlay.style.display = 'none';
-  }
-
   // Render products
   function renderProducts() {
-    productsSection.innerHTML = '';
-    products.forEach((product, i) => {
+    productsContainer.innerHTML = '';
+    products.forEach(product => {
       const card = document.createElement('div');
       card.className = 'card';
 
-      // Out of stock label if stock=0
-      if(product.stock === 0) {
-        const outLabel = document.createElement('span');
-        outLabel.className = 'out-of-stock';
-        outLabel.textContent = 'Out of Stock';
-        card.appendChild(outLabel);
+      // Out of stock badge if stock 0
+      if (product.stock === 0) {
+        const stockBadge = document.createElement('span');
+        stockBadge.className = 'out-of-stock';
+        stockBadge.textContent = 'Out of Stock';
+        card.appendChild(stockBadge);
       }
 
       const img = document.createElement('img');
@@ -507,192 +452,166 @@
       img.alt = product.name;
       card.appendChild(img);
 
-      const h2 = document.createElement('h2');
-      h2.textContent = product.name;
-      card.appendChild(h2);
+      const title = document.createElement('h2');
+      title.textContent = product.name.includes('Glock') ? `🔫 ${product.name}` : `💰 ${product.name}`;
+      card.appendChild(title);
 
-      const p = document.createElement('p');
-      p.textContent = product.desc;
-      card.appendChild(p);
+      const desc = document.createElement('p');
+      desc.textContent = product.desc;
+      card.appendChild(desc);
 
-      const btn = document.createElement('button');
-      btn.textContent = `Buy for $${product.price}`;
-      btn.disabled = product.stock === 0;
-      btn.className = 'buy-button';
-      if(product.stock > 0) btn.classList.add('enabled');
+      // Add to Cart button
+      const addToCartBtn = document.createElement('button');
+      addToCartBtn.className = 'btn';
+      addToCartBtn.textContent = 'Add to Cart';
+      addToCartBtn.disabled = product.stock === 0;
+      addToCartBtn.setAttribute('aria-disabled', product.stock === 0);
 
-      btn.addEventListener('click', () => addToCart(product.id));
+      addToCartBtn.addEventListener('click', () => {
+        addToCart(product);
+      });
+      card.appendChild(addToCartBtn);
 
-      card.appendChild(btn);
-
-      productsSection.appendChild(card);
+      productsContainer.appendChild(card);
     });
   }
 
-  // Add item to cart
-  function addToCart(id) {
-    if(!currentUser) {
-      alert('Please log in to add items to cart.');
-      return;
-    }
-    const product = products.find(p => p.id === id);
-    if(!product || product.stock === 0) {
-      alert('Product out of stock.');
-      return;
-    }
-    // Add or increase quantity in cart
-    const cartItem = cart.find(i => i.id === id);
+  // Add product to cart
+  function addToCart(product) {
+    const cartItem = cart.find(item => item.id === product.id);
     if(cartItem) {
+      // Check stock limit
       if(cartItem.qty < product.stock) {
         cartItem.qty++;
       } else {
-        alert('Reached max stock for this item.');
+        alert('No more stock available for this item.');
         return;
       }
     } else {
-      cart.push({ id: id, qty: 1 });
+      if(product.stock > 0) {
+        cart.push({...product, qty: 1});
+      } else {
+        alert('This item is out of stock.');
+        return;
+      }
     }
-    renderCart();
-    alert(`Added 1 x ${product.name} to your cart.`);
+    updateCartUI();
   }
 
-  // Render cart
-  function renderCart() {
+  // Update cart UI
+  function updateCartUI() {
     if(cart.length === 0) {
       cartItems.textContent = 'No items yet.';
-      totalDisplay.textContent = 'Total: $0';
+      cartCount.textContent = '0';
+      cartTotal.textContent = 'Total: $0';
       checkoutBtn.disabled = true;
-      cartCountSpan.textContent = '0';
-      return;
-    }
-    cartCountSpan.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
-    cartItems.innerHTML = '';
-    total = 0;
-    cart.forEach(item => {
-      const product = products.find(p => p.id === item.id);
-      if(product) {
-        const div = document.createElement('div');
-        div.textContent = `${item.qty} x ${product.name}`;
+    } else {
+      cartItems.innerHTML = '';
+      let totalPrice = 0;
+      let totalQty = 0;
+      cart.forEach(item => {
+        totalQty += item.qty;
+        totalPrice += item.qty * item.price;
+        const itemDiv = document.createElement('div');
+        itemDiv.textContent = `${item.name} x${item.qty}`;
         const priceSpan = document.createElement('span');
-        const priceForQty = product.price * item.qty;
-        priceSpan.textContent = `$${priceForQty.toFixed(2)}`;
-        div.appendChild(priceSpan);
-        cartItems.appendChild(div);
-        total += priceForQty;
-      }
-    });
-    totalDisplay.textContent = `Total: $${total.toFixed(2)}`;
-    checkoutBtn.disabled = false;
+        priceSpan.textContent = `$${(item.price * item.qty).toFixed(2)}`;
+        itemDiv.appendChild(priceSpan);
+        cartItems.appendChild(itemDiv);
+      });
+      cartCount.textContent = totalQty;
+      cartTotal.textContent = `Total: $${totalPrice.toFixed(2)}`;
+      checkoutBtn.disabled = false;
+    }
   }
 
-  // Login or register user
-  function loginUser() {
+  // Toggle cart dropdown
+  cartIcon.addEventListener('click', () => {
+    const expanded = cartIcon.getAttribute('aria-expanded') === 'true';
+    if(expanded) {
+      cartDropdown.style.display = 'none';
+      cartIcon.setAttribute('aria-expanded', 'false');
+    } else {
+      if(cart.length === 0) return; // no dropdown if empty
+      cartDropdown.style.display = 'block';
+      cartIcon.setAttribute('aria-expanded', 'true');
+    }
+  });
+
+  // Checkout
+  checkoutBtn.addEventListener('click', () => {
+    if(cart.length === 0) return alert('Your cart is empty.');
+    if(!currentUser) {
+      alert('Please login to complete your purchase.');
+      return;
+    }
+    // Generate order ID and show modal
+    const orderId = `CSC-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+    modalOrderId.textContent = orderId;
+    modalOverlay.style.display = 'flex';
+
+    // Clear cart
+    cart = [];
+    updateCartUI();
+  });
+
+  // Close modal
+  function closeModal() {
+    modalOverlay.style.display = 'none';
+  }
+
+  // Login logic (simple localStorage-based)
+  loginBtn.addEventListener('click', () => {
     const username = loginUsername.value.trim();
     const password = loginPassword.value.trim();
-    blurMessage.textContent = '';
-
     if(username.length < 3 || password.length < 3) {
       blurMessage.textContent = 'Username and password must be at least 3 characters.';
       return;
     }
-
-    // Register new user if not exists
+    // Register if new user
     if(!users[username]) {
       users[username] = password;
       localStorage.setItem('csc_rp_users', JSON.stringify(users));
       currentUser = username;
-      alert(`New user "${username}" registered successfully!`);
-      afterLogin();
-      return;
-    }
-
-    // User exists, check password
-    if(users[username] === password) {
-      currentUser = username;
-      afterLogin();
+      hideLogin();
+      alert(`Welcome, ${username}! You are registered and logged in.`);
     } else {
-      blurMessage.textContent = 'Incorrect password. Try again.';
+      // Check password
+      if(users[username] === password) {
+        currentUser = username;
+        hideLogin();
+        alert(`Welcome back, ${username}! You are logged in.`);
+      } else {
+        blurMessage.textContent = 'Incorrect password.';
+      }
     }
-  }
+  });
 
-  // After successful login or preview
-  function afterLogin(preview=false) {
-    unblurSite();
-    if(preview) {
-      userDisplay.textContent = 'Preview Mode';
-      dashboardSection.style.display = 'block';
-    } else {
-      userDisplay.textContent = currentUser;
-      dashboardSection.style.display = 'block';
-    }
-    cart = [];
-    renderCart();
-    renderProducts();
-  }
-
-  // Logout user
-  function logoutUser() {
-    currentUser = null;
-    cart = [];
-    dashboardSection.style.display = 'none';
-    renderCart();
-    blurOverlay.style.display = 'flex';
-  }
-
-  // Checkout (simulate order)
-  function checkout() {
-    if(cart.length === 0) return;
-    // Generate random order ID
-    const orderId = `CSC-${Math.random().toString(36).substr(2,9).toUpperCase()}`;
-    modalOrderId.textContent = orderId;
-    modalOverlay.style.display = 'flex';
-  }
-
-  function closeModal() {
-    modalOverlay.style.display = 'none';
-    cart = [];
-    renderCart();
-  }
-
-  // Toggle cart visibility
-  function toggleCart() {
-    if(floatingCart.style.display === 'flex') {
-      floatingCart.style.display = 'none';
-    } else {
-      floatingCart.style.display = 'flex';
-    }
-  }
-
-  // Event Listeners
-  loginBtn.addEventListener('click', loginUser);
-  logoutBtn.addEventListener('click', logoutUser);
-  checkoutBtn.addEventListener('click', checkout);
-  cartToggleBtn.addEventListener('click', toggleCart);
-
+  // Preview without login
   previewBtn.addEventListener('click', () => {
-    afterLogin(true);
+    currentUser = 'Guest';
+    hideLogin();
+    alert('Preview mode: You are browsing as Guest.');
+  });
+
+  // Hide login overlay and enable page interaction
+  function hideLogin() {
     blurOverlay.style.display = 'none';
-  });
+    document.getElementById('app').style.filter = 'none';
+  }
 
-  // Keyboard accessibility for cart toggle
-  cartToggleBtn.addEventListener('keydown', e => {
-    if(e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      toggleCart();
-    }
-  });
+  // On page load
+  window.onload = () => {
+    renderProducts();
+    updateCartUI();
+  }
 
-  // Keyboard accessibility for login button on blur overlay
-  loginPassword.addEventListener('keydown', e => {
-    if(e.key === 'Enter') loginUser();
-  });
-  loginUsername.addEventListener('keydown', e => {
-    if(e.key === 'Enter') loginUser();
-  });
-
-  // Initialize
-  blurSite();
-  renderProducts();
 </script>
+
+<footer>
+  &copy; 2025 CaliSide City RP — Join our Discord: <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener">discord.gg/FkqyasFRAs</a>
+</footer>
+
 </body>
 </html>
+
