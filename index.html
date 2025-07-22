@@ -1,88 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CaliSide City RP Shop</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: url('https://imgur.com/GZNrBbW.png') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-    }
-    .overlay {
-      background: rgba(0, 0, 0, 0.7);
-      padding: 20px;
-    }
-    .header, .product, .order-history {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 20px;
-      background: rgba(30, 30, 30, 0.9);
-      border-radius: 8px;
-    }
-    .product {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .stock {
-      font-weight: bold;
-    }
-    .in-stock {
-      color: lightgreen;
-    }
-    .out-stock {
-      color: red;
-    }
-    .order-history table {
-      width: 100%;
-      border-collapse: collapse;
-      color: white;
-    }
-    .order-history th, .order-history td {
-      padding: 10px;
-      border: 1px solid #444;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cali Side City RP Shop</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: url('https://imgur.com/GZNrBbW.png') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+  }
+  .overlay {
+    background-color: rgba(0,0,0,0.75);
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 15px;
+  }
+  h1, h2, h3 {
+    color: #00BFFF;
+    margin-bottom: 10px;
+  }
+  .product {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #00BFFF;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .product img {
+    width: 120px;
+    border-radius: 10px;
+  }
+  .details {
+    max-width: 70%;
+  }
+  .price {
+    font-size: 1.3rem;
+    margin: 10px 0;
+  }
+  .out-stock {
+    color: #ff4c4c;
+    font-weight: bold;
+  }
+  .order-history {
+    background: rgba(0,0,0,0.8);
+    border: 2px solid #00BFFF;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+  }
+  th, td {
+    border: 1px solid #00BFFF;
+    padding: 10px;
+    text-align: center;
+  }
+  #login-section {
+    background: rgba(0,0,0,0.8);
+    border: 2px solid #00BFFF;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 30px 0;
+    max-width: 400px;
+  }
+  input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 15px 0;
+    border: none;
+    border-radius: 8px;
+  }
+  button {
+    background-color: #00BFFF;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  button:hover {
+    background-color: #0095d6;
+  }
+  a {
+    color: #00BFFF;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
 </head>
 <body>
+
   <div class="overlay">
-    <div class="header">
-      <h1>🛒 CaliSide City RP Shop</h1>
-      <p>🧾 Buy in-game items and send your Order ID to our Discord: <a href="https://discord.gg/FkqyasFRAs" style="color:#00aaff">discord.gg/FkqyasFRAs</a></p>
+
+    <h1>🛒 Cali Side City RP Shop</h1>
+    <p>Official store — purchase in-game items and send your Order ID in our Discord ticket.</p>
+
+    <!-- Products -->
+    <div class="product">
+      <div class="details">
+        <h2>🔵 Blue Glock Switch (x2) + 10K Ammo</h2>
+        <p class="price">$10.00</p>
+        <p class="out-stock">🚫 Out of Stock</p>
+      </div>
+      <img src="https://imgur.com/GZNrBbW.png" alt="Blue Glock Switch" />
     </div>
 
     <div class="product">
-      <div>
-        <h2>🔫 Glock Drum w/ Switch & Beam</h2>
-        <p>$10</p>
-        <p class="stock out-stock">Out of Stock</p>
+      <div class="details">
+        <h2>💰 1M City Coins</h2>
+        <p class="price">$15.00</p>
+        <p class="out-stock">🚫 Out of Stock</p>
       </div>
-      <img src="https://imgur.com/GZNrBbW.png" alt="Glock" width="100">
+      <img src="https://imgur.com/GZNrBbW.png" alt="1M City Coins" />
     </div>
 
     <div class="product">
-      <div>
-        <h2>🔵 Blue Glock Switch (2x + 10k Ammo)</h2>
-        <p>$15</p>
-        <p class="stock out-stock">Out of Stock</p>
+      <div class="details">
+        <h2>🔫 Standard Blue Glock</h2>
+        <p class="price">$5.00</p>
+        <p class="out-stock">🚫 Out of Stock</p>
       </div>
-      <img src="https://imgur.com/GZNrBbW.png" alt="Blue Glock" width="100">
+      <img src="https://imgur.com/GZNrBbW.png" alt="Standard Blue Glock" />
     </div>
 
-    <div class="product">
-      <div>
-        <h2>🟦 Standard Blue Glock</h2>
-        <p>$5</p>
-        <p class="stock out-stock">Out of Stock</p>
-      </div>
-      <img src="https://imgur.com/GZNrBbW.png" alt="Standard Glock" width="100">
+    <!-- Login -->
+    <div id="login-section">
+      <h2>👤 Login or Sign Up</h2>
+      <form id="loginForm">
+        <input type="text" placeholder="Username" required />
+        <input type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+        <button type="button" onclick="alert('Sign up feature coming soon!')">Sign Up</button>
+      </form>
     </div>
 
+    <!-- Order History -->
     <div class="order-history">
       <h2>📜 My Orders</h2>
       <table>
@@ -94,26 +160,38 @@
             <th>Date</th>
           </tr>
         </thead>
-        <tbody id="orders">
-          <!-- Order data would be populated here via JS -->
+        <tbody id="orderList">
+          <!-- JS inserts orders here -->
         </tbody>
       </table>
     </div>
+
   </div>
 
-  <script>
-    // Example static order data
-    const orderData = [
-      { id: "#123ABC", product: "Glock Drum", status: "Completed", date: "2025-07-22" },
-      { id: "#456DEF", product: "Blue Glock", status: "Pending", date: "2025-07-21" }
-    ];
+<script>
+  const orders = [
+    { id: '#123ABC', product: 'Blue Glock Switch', status: 'Completed', date: '2025-07-22' },
+    { id: '#456DEF', product: '1M City Coins', status: 'Pending', date: '2025-07-21' }
+  ];
 
-    const orderContainer = document.getElementById('orders');
-    orderData.forEach(order => {
-      const row = document.createElement('tr');
-      row.innerHTML = `<td>${order.id}</td><td>${order.product}</td><td>${order.status}</td><td>${order.date}</td>`;
-      orderContainer.appendChild(row);
-    });
-  </script>
+  const orderList = document.getElementById('orderList');
+  orders.forEach(order => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${order.id}</td>
+      <td>${order.product}</td>
+      <td>${order.status}</td>
+      <td>${order.date}</td>
+    `;
+    orderList.appendChild(row);
+  });
+
+  // Login form submit example
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    alert('Login feature coming soon!');
+  });
+</script>
+
 </body>
 </html>
