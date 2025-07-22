@@ -1,0 +1,166 @@
+import React, { useState } from "react";
+
+const PRODUCTS = [
+  {
+    id: "coins-1m",
+    name: "💰 1M Coins",
+    price: 15,
+    description: "Boost your in-game wealth instantly with 1 million coins!",
+    img: "https://i.imgur.com/GZNrBbW.png", // Image from your Imgur
+  },
+  {
+    id: "glock-drum-switchbeam",
+    name: "🔫 Glock Drum with Switch Beam",
+    price: 10,
+    description: "Powerful and precise weapon mod to dominate the streets.",
+    img: "https://i.imgur.com/5epjqYN.png", // Glock drum image
+  },
+  {
+    id: "standard-blur-glock",
+    name: "🔫 Standard Blur Glock",
+    price: 5,
+    description: "Reliable classic Glock pistol for all your missions.",
+    img: "https://i.imgur.com/5A3zq3v.png", // Blur Glock image
+  },
+];
+
+export default function Shop() {
+  const [cart, setCart] = useState([]);
+
+  function addToCart(product) {
+    setCart((prev) => [...prev, product]);
+  }
+
+  function removeFromCart(index) {
+    setCart((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function getTotal() {
+    return cart.reduce((sum, item) => sum + item.price, 0);
+  }
+
+  function checkout() {
+    if (cart.length === 0) {
+      alert("🛒 Your cart is empty! Add something first.");
+      return;
+    }
+    const orderId = Math.random().toString(36).substring(2, 10).toUpperCase();
+    alert(
+      `✅ Order Successful!\n\nOrder ID: ${orderId}\nTotal: $${getTotal()}\n\nPlease send this Order ID in the #orders channel on our Discord to confirm your purchase. Thanks for shopping at Cali Side City RP! 🎉`
+    );
+    setCart([]);
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white p-10 font-sans">
+      <header className="max-w-6xl mx-auto mb-12 text-center">
+        <h1 className="text-6xl font-extrabold mb-3 tracking-wide drop-shadow-lg">
+          🎮 Cali Side City RP Shop
+        </h1>
+        <p className="text-gray-300 text-lg max-w-xl mx-auto">
+          Get your exclusive in-game items and coins below! 💎 Fast delivery,
+          trusted by the community.
+        </p>
+      </header>
+
+      <main className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+        {/* Products */}
+        <section>
+          <h2 className="text-4xl font-bold mb-8 border-b border-gray-600 pb-3">
+            🛍️ Products
+          </h2>
+          <div className="space-y-8">
+            {PRODUCTS.map((product) => (
+              <div
+                key={product.id}
+                className="bg-gray-800 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+              >
+                <img
+                  src={product.img}
+                  alt={product.name}
+                  className="rounded-lg mx-auto mb-5 object-contain max-h-40 w-full"
+                />
+                <h3 className="text-2xl font-semibold mb-2 flex items-center space-x-2">
+                  <span>{product.name}</span>
+                </h3>
+                <p className="text-gray-400 mb-5">{product.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-3xl font-bold">${product.price}</span>
+                  <button
+                    onClick={() => addToCart(product)}
+                    className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-full font-semibold shadow-md transition-colors duration-200"
+                    aria-label={`Add ${product.name} to cart`}
+                  >
+                    ➕ Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Cart */}
+        <section className="bg-gray-900 rounded-2xl p-6 shadow-xl flex flex-col">
+          <h2 className="text-4xl font-bold mb-6 border-b border-gray-600 pb-3 flex items-center space-x-3">
+            🛒 Your Cart{" "}
+            <span className="text-blue-400 text-xl font-semibold">
+              ({cart.length} items)
+            </span>
+          </h2>
+
+          {cart.length === 0 ? (
+            <p className="text-gray-400 flex-grow flex items-center justify-center text-center font-medium text-lg">
+              Your cart is empty. Add some awesome items above! 🚀
+            </p>
+          ) : (
+            <ul className="flex-grow overflow-auto space-y-4">
+              {cart.map((item, index) => (
+                <li
+                  key={index}
+                  className="flex justify-between items-center bg-gray-800 rounded-xl p-3"
+                >
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src={item.img}
+                      alt={item.name}
+                      className="w-14 h-14 rounded-lg object-contain"
+                    />
+                    <div>
+                      <h4 className="font-semibold text-lg">{item.name}</h4>
+                      <p className="text-gray-400 text-sm">${item.price}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => removeFromCart(index)}
+                    className="text-red-500 hover:text-red-700 font-extrabold text-2xl"
+                    aria-label={`Remove ${item.name} from cart`}
+                    title="Remove"
+                  >
+                    &times;
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="mt-6 border-t border-gray-700 pt-5 flex justify-between items-center">
+            <span className="text-3xl font-bold">Total: ${getTotal()}</span>
+            <button
+              onClick={checkout}
+              disabled={cart.length === 0}
+              className="bg-green-600 disabled:opacity-50 hover:bg-green-700 px-8 py-4 rounded-full font-bold shadow-lg transition-colors duration-200"
+            >
+              💳 Checkout
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer className="mt-20 text-center text-gray-400 text-sm">
+        © {new Date().getFullYear()} Cali Side City RP — All rights reserved.  
+        <br />  
+        Made with ❤️ by the Cali Side Team
+      </footer>
+    </div>
+  );
+}
