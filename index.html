@@ -8,19 +8,14 @@
   * {
     box-sizing: border-box;
   }
-  html, body {
-    height: 100%;
-    margin: 0;
-  }
-  body {
+  body, html {
+    margin: 0; padding: 0; height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: url('https://i.imgur.com/GZNrBbW.png') no-repeat center center fixed;
     background-size: cover;
     color: #f0f0f0;
     position: relative;
     overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
   }
   body::before {
     content: "";
@@ -36,7 +31,6 @@
     margin: 0 auto;
     padding: 30px 20px 60px;
     transition: filter 0.5s ease;
-    flex: 1 0 auto;
   }
   header {
     text-align: center;
@@ -370,8 +364,7 @@
     background:#008fcc;
   }
   footer {
-    flex-shrink: 0;
-    margin-top: 20px;
+    margin-top: 60px;
     padding: 20px;
     text-align: center;
     font-size: 1rem;
@@ -503,141 +496,145 @@
         <button class="buy-button" disabled>Add to Cart</button>
       </div>
 
-      <div class="card" data-name="Blue Glock w/ Switch (2 pcs + 10k Ammo)" data-desc="Clean & custom. Complete your arsenal.">
+      <div class="card" data-name="Blue Glock w/ Switch (2 pcs + 10k Ammo)" data-desc="Clean & custom for your RP grind.">
         <span class="out-of-stock">Out of Stock</span>
         <img src="https://i.imgur.com/GZNrBbW.png" alt="Blue Glock" />
-        <h2>🔫 Blue Glock w/ Switch (2 pcs + 10k Ammo) – $15</h2>
-        <p>Clean & custom. Complete your arsenal.</p>
+        <h2>🔵 Blue Glock w/ Switch (2 pcs + 10k Ammo) – $5</h2>
+        <p>Clean & custom for your RP grind.</p>
         <button class="buy-button" disabled>Add to Cart</button>
       </div>
 
-      <!-- Add other products exactly as you had -->
+      <div class="card" data-name="Custom Drug" data-desc="Create your own custom drug to sell or use in RP.">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/CquoWEE.png" alt="Custom Drug" />
+        <h2>💊 Custom Drug – $30</h2>
+        <p>Create your own custom drug to sell or use in RP.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
+
+      <div class="card" data-name="4 Piece Custom Clothing" data-desc="Get unique clothes made for your style.">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/CquoWEE.png" alt="Custom Clothing" />
+        <h2>👕 4 Piece Custom Clothing – $15</h2>
+        <p>Get unique clothes made for your style.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
+
+      <div class="card" data-name="Custom Personal Gun" data-desc="Your personal custom gun, designed by you.">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Custom Personal Gun" />
+        <h2>🔫 Custom Personal Gun – $50</h2>
+        <p>Your personal custom gun, designed by you.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
 
     </section>
-
   </div>
 
-  <!-- Cart icon top right -->
-  <div id="cart-icon" aria-label="Shopping cart" role="button" tabindex="0" title="Open Cart">
-    🛒<div id="cart-count" aria-live="polite" aria-atomic="true">0</div>
+  <div id="blur-overlay" aria-hidden="false" role="dialog" aria-modal="true" aria-labelledby="blur-title" aria-describedby="blur-desc">
+    <h2 id="blur-title">Login to CaliSide City RP Store</h2>
+    <input type="text" id="username" placeholder="Enter your username" aria-label="Username" autocomplete="username" />
+    <input type="password" id="password" placeholder="Enter your password" aria-label="Password" autocomplete="current-password" />
+    <button id="login-btn">Login</button>
+    <p id="blur-message" role="alert" aria-live="assertive"></p>
   </div>
 
-  <!-- Cart popup -->
-  <div id="cart-popup" role="dialog" aria-modal="true" aria-labelledby="cart-popup-title">
-    <h3 id="cart-popup-title">Your Cart</h3>
-    <div id="cart-items" tabindex="0" aria-live="polite" aria-atomic="true">
-      <p>Your cart is empty.</p>
-    </div>
-    <div id="cart-total">Total: $0</div>
+  <div id="cart-icon" aria-label="Shopping cart" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">
+    🛒<span id="cart-count" aria-live="polite" aria-atomic="true">0</span>
+  </div>
+
+  <div id="cart-popup" role="region" aria-label="Shopping cart contents" tabindex="-1">
+    <h3>🛒 Your Cart</h3>
+    <div id="cart-items" tabindex="0" aria-live="polite" aria-atomic="true"></div>
+    <div id="cart-total" aria-live="polite" aria-atomic="true"></div>
     <button id="checkout-btn-popup" disabled>Checkout</button>
   </div>
 
-  <footer>
-    &copy; 2025 CaliSide RP — Join our Discord for support and updates: 
-    <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener noreferrer">
-      https://discord.gg/FkqyasFRAs
-    </a>
-  </footer>
+  <div id="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+    <div id="modal">
+      <h2 id="modal-title">Thank You for Your Purchase!</h2>
+      <p id="modal-desc">Please join our Discord to open a support ticket and claim your purchase.<br /><br /><a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener noreferrer" style="color:#00aaff; font-weight:700;">Join CaliSide RP Discord</a></p>
+      <button id="modal-close-btn" aria-label="Close purchase confirmation">Close</button>
+    </div>
+  </div>
 
 <script>
-  // Your existing JavaScript unchanged, for login, logout, search, cart etc.
-
-  const searchBar = document.getElementById('search-bar');
-  const products = document.querySelectorAll('.card');
+  // Basic login with hardcoded user/password for demo only
+  const loginOverlay = document.getElementById('blur-overlay');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const loginBtn = document.getElementById('login-btn');
+  const blurMessage = document.getElementById('blur-message');
   const dashboardSection = document.getElementById('dashboard-section');
   const userDisplay = document.getElementById('user-display');
   const logoutBtn = document.getElementById('logout-btn');
 
-  // Cart elements
-  const cartIcon = document.getElementById('cart-icon');
-  const cartCount = document.getElementById('cart-count');
-  const cartPopup = document.getElementById('cart-popup');
-  const cartItemsContainer = document.getElementById('cart-items');
-  const cartTotal = document.getElementById('cart-total');
-  const checkoutBtnPopup = document.getElementById('checkout-btn-popup');
+  const app = document.getElementById('app');
 
-  let cart = JSON.parse(localStorage.getItem('cart')) || {};
-  let currentUser = localStorage.getItem('caliUser') || null;
+  let loggedInUser = null;
 
-  function updateCartDisplay() {
-    const items = Object.entries(cart);
-    if (items.length === 0) {
-      cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
-      cartCount.textContent = '0';
-      cartTotal.textContent = 'Total: $0';
-      checkoutBtnPopup.disabled = true;
-      return;
-    }
-    let total = 0;
-    cartItemsContainer.innerHTML = '';
-    items.forEach(([key, quantity]) => {
-      const product = [...products].find(p => p.dataset.name === key);
-      if (!product) return;
-      const priceText = product.querySelector('h2').textContent;
-      const priceMatch = priceText.match(/\$(\d+)/);
-      const price = priceMatch ? parseInt(priceMatch[1], 10) : 0;
-      total += price * quantity;
+  const validUsers = {
+    'player1': 'pass123',
+    'admin': 'adminpass',
+  };
 
-      const itemDiv = document.createElement('div');
-      itemDiv.textContent = `${key} x${quantity}`;
-      const priceDiv = document.createElement('div');
-      priceDiv.textContent = `$${price * quantity}`;
-      itemDiv.appendChild(priceDiv);
-      cartItemsContainer.appendChild(itemDiv);
-    });
-    cartCount.textContent = items.reduce((sum, [, qty]) => sum + qty, 0);
-    cartTotal.textContent = `Total: $${total}`;
-    checkoutBtnPopup.disabled = false;
+  function checkLogin(username, password) {
+    return validUsers[username] && validUsers[username] === password;
   }
 
-  function addToCart(name) {
-    if (!currentUser) {
-      alert('Please log in to add items to your cart.');
-      return;
-    }
-    cart[name] = (cart[name] || 0) + 1;
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartDisplay();
+  function setLoginState(username) {
+    loggedInUser = username;
+    userDisplay.textContent = username;
+    loginOverlay.style.display = 'none';
+    dashboardSection.style.display = 'block';
+    app.style.filter = 'none';
+    loadCart();
   }
 
-  // Initialize page
-  function initialize() {
-    if (currentUser) {
-      dashboardSection.style.display = 'block';
-      userDisplay.textContent = currentUser;
+  function setLogoutState() {
+    loggedInUser = null;
+    userDisplay.textContent = '';
+    loginOverlay.style.display = 'flex';
+    dashboardSection.style.display = 'none';
+    app.style.filter = 'blur(4px)';
+    clearCart();
+    usernameInput.value = '';
+    passwordInput.value = '';
+    blurMessage.textContent = '';
+  }
+
+  loginBtn.addEventListener('click', () => {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+    if (!username || !password) {
+      blurMessage.textContent = 'Please enter username and password.';
+      return;
+    }
+    if (checkLogin(username, password)) {
+      setLoginState(username);
     } else {
-      dashboardSection.style.display = 'none';
-      userDisplay.textContent = '';
-      cart = {};
-      localStorage.removeItem('cart');
-      updateCartDisplay();
+      blurMessage.textContent = 'Invalid username or password.';
     }
-    updateCartDisplay();
-  }
-
-  // Login flow simplified for demo:
-  // For your real login you would expand this, here is just placeholder
-  function login(user) {
-    currentUser = user;
-    localStorage.setItem('caliUser', user);
-    initialize();
-  }
-
-  // Logout
-  logoutBtn.addEventListener('click', () => {
-    currentUser = null;
-    localStorage.removeItem('caliUser');
-    cart = {};
-    localStorage.removeItem('cart');
-    initialize();
   });
 
-  // Search
+  logoutBtn.addEventListener('click', () => {
+    setLogoutState();
+  });
+
+  // Initialize on load
+  window.addEventListener('load', () => {
+    setLogoutState();
+  });
+
+  // Search functionality
+  const searchBar = document.getElementById('search-bar');
+  const productCards = document.querySelectorAll('.products .card');
+
   searchBar.addEventListener('input', () => {
     const query = searchBar.value.toLowerCase();
-    products.forEach(card => {
-      const name = card.dataset.name.toLowerCase();
-      const desc = card.dataset.desc.toLowerCase();
+    productCards.forEach(card => {
+      const name = card.getAttribute('data-name').toLowerCase();
+      const desc = card.getAttribute('data-desc').toLowerCase();
       if (name.includes(query) || desc.includes(query)) {
         card.style.display = '';
       } else {
@@ -646,28 +643,110 @@
     });
   });
 
-  // Enable buy buttons only if product is in stock (all disabled here since out of stock)
-  products.forEach(card => {
-    const btn = card.querySelector('.buy-button');
-    if (!card.querySelector('.out-of-stock')) {
-      btn.classList.add('enabled');
-      btn.disabled = false;
-      btn.addEventListener('click', () => addToCart(card.dataset.name));
+  // Cart functionality
+  const cartIcon = document.getElementById('cart-icon');
+  const cartCount = document.getElementById('cart-count');
+  const cartPopup = document.getElementById('cart-popup');
+  const cartItemsContainer = document.getElementById('cart-items');
+  const cartTotalDisplay = document.getElementById('cart-total');
+  const checkoutBtn = document.getElementById('checkout-btn-popup');
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
+
+  let cart = {};
+
+  function updateCartCount() {
+    const count = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+    cartCount.textContent = count;
+    cartIcon.setAttribute('aria-label', Shopping cart with ${count} item${count !== 1 ? 's' : ''});
+    checkoutBtn.disabled = count === 0;
+  }
+
+  function saveCart() {
+    if (loggedInUser) {
+      localStorage.setItem(cart_${loggedInUser}, JSON.stringify(cart));
+    }
+  }
+
+  function loadCart() {
+    if (loggedInUser) {
+      const saved = localStorage.getItem(cart_${loggedInUser});
+      if (saved) {
+        cart = JSON.parse(saved);
+      } else {
+        cart = {};
+      }
+    } else {
+      cart = {};
+    }
+    updateCartCount();
+  }
+
+  function clearCart() {
+    cart = {};
+    updateCartCount();
+    saveCart();
+  }
+
+  function renderCart() {
+    cartItemsContainer.innerHTML = '';
+    let total = 0;
+    for (const [itemName, qty] of Object.entries(cart)) {
+      const card = [...productCards].find(c => c.getAttribute('data-name') === itemName);
+      if (!card) continue;
+      const priceText = card.querySelector('h2').textContent;
+      const priceMatch = priceText.match(/\$(\d+)/);
+      const price = priceMatch ? parseInt(priceMatch[1], 10) : 0;
+
+      const itemDiv = document.createElement('div');
+      itemDiv.textContent = ${qty} × ${itemName} - $${price * qty};
+      cartItemsContainer.appendChild(itemDiv);
+
+      total += price * qty;
+    }
+    cartTotalDisplay.textContent = Total: $${total};
+  }
+
+  // Add to cart buttons are disabled (all items out of stock),
+  // so no add-to-cart code here.
+
+  cartIcon.addEventListener('click', () => {
+    if (cartPopup.style.display === 'flex') {
+      cartPopup.style.display = 'none';
+      cartIcon.setAttribute('aria-expanded', 'false');
+    } else {
+      renderCart();
+      cartPopup.style.display = 'flex';
+      cartIcon.setAttribute('aria-expanded', 'true');
+      cartItemsContainer.focus();
     }
   });
 
-  // Cart icon toggle popup
-  cartIcon.addEventListener('click', () => {
-    cartPopup.style.display = cartPopup.style.display === 'flex' ? 'none' : 'flex';
+  modalCloseBtn.addEventListener('click', () => {
+    modalOverlay.style.display = 'none';
   });
 
-  checkoutBtnPopup.addEventListener('click', () => {
-    alert('Checkout is not implemented yet. Please open a ticket on our Discord.');
+  checkoutBtn.addEventListener('click', () => {
+    // Just show thank you modal for demo
+    cartPopup.style.display = 'none';
+    modalOverlay.style.display = 'flex';
+    clearCart();
   });
 
-  // Initialize on load
-  initialize();
+  // Accessibility: close cart popup on Escape key
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (cartPopup.style.display === 'flex') {
+        cartPopup.style.display = 'none';
+        cartIcon.setAttribute('aria-expanded', 'false');
+      }
+      if (modalOverlay.style.display === 'flex') {
+        modalOverlay.style.display = 'none';
+      }
+    }
+  });
 
 </script>
+<footer>© 2025 CaliSide RP https://discord.gg/FkqyasFRAs</footer>
 </body>
 </html>
