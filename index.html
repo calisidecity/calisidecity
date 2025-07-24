@@ -849,4 +849,77 @@
   });
 </script>
 </body>
-</html>
+</html> (() => {
+  const usersKey = 'caliSideUsers';
+  let users = JSON.parse(localStorage.getItem(usersKey)) || {};
+  
+  const loggedUserKey = 'caliSideLoggedUser';
+  
+  const loginOverlay = document.getElementById('blur-overlay') || document.getElementById('login-overlay');
+  const usernameInput = document.getElementById('username-input') || document.getElementById('login-username');
+  const passwordInput = document.getElementById('password-input') || document.getElementById('login-password');
+  const loginBtn = document.getElementById('login-btn');
+  const loginMessage = document.getElementById('blur-message') || document.getElementById('login-error');
+  const app = document.getElementById('app');
+  const dashboard = document.getElementById('dashboard-section');
+  const userDisplay = document.getElementById('user-display');
+
+  const currentUser = localStorage.getItem(loggedUserKey);
+  if (currentUser && users[currentUser]) {
+    if (loginOverlay) loginOverlay.style.display = 'none';
+    if (app) app.style.filter = 'none';
+    if (dashboard) dashboard.style.display = 'block';
+    if (userDisplay) userDisplay.textContent = currentUser;
+  } else {
+    if (loginOverlay) loginOverlay.style.display = 'flex';
+    if (app) app.style.filter = 'blur(6px)';
+    if (dashboard) dashboard.style.display = 'none';
+  }
+
+  if (loginBtn) {
+    loginBtn.addEventListener('click', () => {
+      const username = usernameInput?.value.trim();
+      const password = passwordInput?.value.trim();
+      if (!username || !password) {
+        if (loginMessage) loginMessage.textContent = 'Please enter username and password.';
+        return;
+      }
+
+      if (users[username]) {
+        if (users[username] === password) {
+          localStorage.setItem(loggedUserKey, username);
+          if (loginOverlay) loginOverlay.style.display = 'none';
+          if (app) app.style.filter = 'none';
+          if (dashboard) dashboard.style.display = 'block';
+          if (userDisplay) userDisplay.textContent = username;
+          if (loginMessage) loginMessage.textContent = '';
+        } else {
+          if (loginMessage) loginMessage.textContent = 'Incorrect password.';
+        }
+      } else {
+        users[username] = password;
+        localStorage.setItem(usersKey, JSON.stringify(users));
+        localStorage.setItem(loggedUserKey, username);
+        if (loginOverlay) loginOverlay.style.display = 'none';
+        if (app) app.style.filter = 'none';
+        if (dashboard) dashboard.style.display = 'block';
+        if (userDisplay) userDisplay.textContent = username;
+        if (loginMessage) loginMessage.textContent = '';
+      }
+    });
+  }
+
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem(loggedUserKey);
+      if (loginOverlay) loginOverlay.style.display = 'flex';
+      if (app) app.style.filter = 'blur(6px)';
+      if (dashboard) dashboard.style.display = 'none';
+      if (userDisplay) userDisplay.textContent = '';
+      if (usernameInput) usernameInput.value = '';
+      if (passwordInput) passwordInput.value = '';
+      if (loginMessage) loginMessage.textContent = '';
+    });
+  }
+})();
