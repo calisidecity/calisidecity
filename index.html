@@ -363,6 +363,24 @@
   #modal button:hover {
     background:#008fcc;
   }
+  /* Footer */
+  footer {
+    position: fixed;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #00aaff;
+    font-size: 0.9rem;
+    user-select: none;
+    pointer-events: none;
+    font-weight: 600;
+    text-shadow: 0 0 3px rgba(0,170,255,0.8);
+    z-index: 9999;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+  }
   /* Scrollbars */
   #cart-items::-webkit-scrollbar {
     width: 8px;
@@ -386,25 +404,6 @@
       width: 90vw;
       right: 5vw;
     }
-  }
-  /* FOOTER FIXED & VISIBLE */
-  footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.85);
-    padding: 15px 20px;
-    text-align: center;
-    font-size: 1rem;
-    color: #00aaff;
-    z-index: 500;
-    user-select: none;
-  }
-  footer a {
-    color: #00aaff;
-    text-decoration: underline;
-    font-weight: 700;
   }
 </style>
 </head>
@@ -490,220 +489,213 @@
         <button class="buy-button" disabled>Add to Cart</button>
       </div>
 
-      <div class="card" data-name="Glock Drum w/ Switch + Beam" data-desc="Upgrade your street arsenal.">
+      <div class="card" data-name="Glock Drum w/ Switch + Beam" data-desc="Upgrade your street loadout. No cap.">
         <span class="out-of-stock">Out of Stock</span>
-        <img src="https://i.imgur.com/9VXbBLG.png" alt="Glock Drum w/ Switch + Beam" />
-        <h2>🔫 Glock Drum w/ Switch + Beam – $20</h2>
-        <p>Upgrade your street arsenal.</p>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Glock Drum" />
+        <h2>🔫 Glock Drum w/ Switch + Beam – $10</h2>
+        <p>Upgrade your street loadout. No cap.</p>
+        <button class="buy-button" disabled>Add to Cart</button>
+      </div>
+
+      <div class="card" data-name="Blue Glock w/ Switch (2 pcs + 10k Ammo)" data-desc="Clean & custom for your RP grind.">
+        <span class="out-of-stock">Out of Stock</span>
+        <img src="https://i.imgur.com/GZNrBbW.png" alt="Blue Glock" />
+        <h2>🔫 Blue Glock w/ Switch (2 pcs + 10k Ammo) – $10</h2>
+        <p>Clean & custom for your RP grind.</p>
         <button class="buy-button" disabled>Add to Cart</button>
       </div>
 
     </section>
+
   </div>
 
   <!-- Cart Icon -->
-  <div id="cart-icon" aria-label="Shopping cart" role="button" tabindex="0">
-    🛒 <span id="cart-count">0</span>
+  <div id="cart-icon" aria-label="Shopping cart" tabindex="0" role="button" aria-pressed="false">
+    🛒 <span id="cart-count" aria-live="polite" aria-atomic="true">0</span>
   </div>
 
   <!-- Cart Popup -->
   <div id="cart-popup" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1">
     <h3 id="cart-title">Your Cart</h3>
-    <div id="cart-items" aria-live="polite" aria-relevant="additions removals"></div>
-    <div id="cart-total"></div>
+    <div id="cart-items" tabindex="0" aria-live="polite" aria-atomic="true">
+      <!-- Cart items go here -->
+    </div>
+    <div id="cart-total">Total: $0</div>
     <button id="checkout-btn-popup" disabled>Checkout</button>
   </div>
 
-  <!-- Modal for checkout confirmation -->
-  <div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
-    <div id="modal">
-      <h2 id="modal-title">Checkout Complete!</h2>
-      <p>Thank you for your purchase. You can now close this window.</p>
+  <!-- Modal -->
+  <div id="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+    <div id="modal" tabindex="0">
+      <h2 id="modal-title">Thank you for your purchase!</h2>
+      <p id="modal-desc">Your order has been placed successfully.</p>
       <button id="modal-close-btn">Close</button>
     </div>
   </div>
 
-  <!-- Login Blur Overlay -->
-  <div id="blur-overlay" aria-label="Login" role="dialog" aria-modal="true" style="display:flex;flex-direction:column;justify-content:center;align-items:center;">
-    <h2>Welcome to CaliSide City RP Store</h2>
-    <input type="text" id="username-input" placeholder="Username" aria-label="Enter your username" autocomplete="username" />
-    <input type="password" id="password-input" placeholder="Password" aria-label="Enter your password" autocomplete="current-password" />
-    <button id="login-btn" aria-label="Log in">Login</button>
-    <div id="blur-message" role="alert" aria-live="assertive" style="min-height: 1.2rem;"></div>
-  </div>
-
+  <!-- Footer -->
   <footer>
-    Powered by <a href="https://discord.gg/zmnu" target="_blank" rel="noopener noreferrer">Z-MENU</a> &bull; CaliSide City RP Store &bull; &copy; 2025
+    CaliSide City RP Store &copy; 2025
   </footer>
 
 <script>
-  // Elements
-  const blurOverlay = document.getElementById('blur-overlay');
-  const usernameInput = document.getElementById('username-input');
-  const passwordInput = document.getElementById('password-input');
-  const loginBtn = document.getElementById('login-btn');
-  const blurMessage = document.getElementById('blur-message');
+  // Simple login simulation - users: user1/pass1, user2/pass2
+  const usersDB = {
+    'user1': 'pass1',
+    'user2': 'pass2'
+  };
 
+  const blurOverlay = document.createElement('div');
+  blurOverlay.id = 'blur-overlay';
+
+  blurOverlay.innerHTML = `
+    <h2>Login to CaliSide City RP Store</h2>
+    <input type="text" id="username" placeholder="Username" autocomplete="username" aria-label="Username" />
+    <input type="password" id="password" placeholder="Password" autocomplete="current-password" aria-label="Password" />
+    <button id="login-btn">Login</button>
+    <div id="blur-message" role="alert" aria-live="assertive"></div>
+  `;
+
+  document.body.appendChild(blurOverlay);
+
+  const loginBtn = blurOverlay.querySelector('#login-btn');
+  const usernameInput = blurOverlay.querySelector('#username');
+  const passwordInput = blurOverlay.querySelector('#password');
+  const blurMessage = blurOverlay.querySelector('#blur-message');
   const dashboardSection = document.getElementById('dashboard-section');
   const userDisplay = document.getElementById('user-display');
   const logoutBtn = document.getElementById('logout-btn');
 
-  const productsSection = document.querySelector('.products');
-  const searchBar = document.getElementById('search-bar');
+  function setLoggedIn(user) {
+    userDisplay.textContent = user;
+    dashboardSection.style.display = 'block';
+    blurOverlay.style.display = 'none';
+    updateCartUI();
+  }
 
-  const cartIcon = document.getElementById('cart-icon');
-  const cartCount = document.getElementById('cart-count');
-  const cartPopup = document.getElementById('cart-popup');
-  const cartItemsContainer = document.getElementById('cart-items');
-  const cartTotalDisplay = document.getElementById('cart-total');
-  const checkoutBtn = document.getElementById('checkout-btn-popup');
+  function setLoggedOut() {
+    userDisplay.textContent = '';
+    dashboardSection.style.display = 'none';
+    blurOverlay.style.display = 'flex';
+    cart = [];
+    updateCartUI();
+  }
 
-  const modalOverlay = document.getElementById('modal-overlay');
-  const modalCloseBtn = document.getElementById('modal-close-btn');
-
-  // State
-  let currentUser = null;
-  let cart = [];
-
-  // Login Handler (accepts ANY username & password)
   loginBtn.addEventListener('click', () => {
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
-    if (!username || !password) {
+    const user = usernameInput.value.trim();
+    const pass = passwordInput.value;
+
+    if (!user || !pass) {
       blurMessage.textContent = 'Please enter username and password.';
       return;
     }
-    // Accept any username/password, no invalid errors
-    setLoginState(username);
+    if (usersDB[user] && usersDB[user] === pass) {
+      setLoggedIn(user);
+      blurMessage.textContent = '';
+      usernameInput.value = '';
+      passwordInput.value = '';
+    } else {
+      blurMessage.textContent = 'Invalid username or password.';
+    }
   });
-
-  function setLoginState(username) {
-    currentUser = username;
-    userDisplay.textContent = currentUser;
-    blurOverlay.style.display = 'none';
-    dashboardSection.style.display = 'block';
-    searchBar.focus();
-    renderCart(); // clear/reset cart on login
-  }
 
   logoutBtn.addEventListener('click', () => {
-    currentUser = null;
-    cart = [];
-    blurOverlay.style.display = 'flex';
-    dashboardSection.style.display = 'none';
-    blurMessage.textContent = '';
-    usernameInput.value = '';
-    passwordInput.value = '';
-    cartPopup.style.display = 'none';
-    updateCartCount();
+    setLoggedOut();
   });
 
-  // Search filter
-  searchBar.addEventListener('input', () => {
-    const term = searchBar.value.toLowerCase();
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-      const name = card.getAttribute('data-name').toLowerCase();
-      const desc = card.getAttribute('data-desc').toLowerCase();
-      if (name.includes(term) || desc.includes(term)) {
-        card.style.display = 'flex';
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  });
+  // Products & cart logic
+  const cartIcon = document.getElementById('cart-icon');
+  const cartPopup = document.getElementById('cart-popup');
+  const cartCount = document.getElementById('cart-count');
+  const cartItemsContainer = document.getElementById('cart-items');
+  const checkoutBtn = document.getElementById('checkout-btn-popup');
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
 
-  // Add to cart buttons
-  productsSection.addEventListener('click', e => {
-    if (!currentUser) return;
-    if (e.target.classList.contains('buy-button') && e.target.classList.contains('enabled')) {
-      const card = e.target.closest('.card');
-      const itemName = card.getAttribute('data-name');
-      const priceText = card.querySelector('h2').textContent;
-      // Extract price number from text like "💰 1,000 Coins – $10"
-      const priceMatch = priceText.match(/\$(\d+)/);
-      const price = priceMatch ? parseInt(priceMatch[1], 10) : 0;
+  let cart = [];
 
-      // Add to cart (max 1 of each item for simplicity)
-      if (cart.find(i => i.name === itemName)) {
-        alert(`"${itemName}" is already in your cart.`);
-        return;
-      }
-      cart.push({name: itemName, price});
-      updateCartCount();
-    }
-  });
-
-  // Cart icon toggle
-  cartIcon.addEventListener('click', () => {
-    if (!currentUser) return;
-    if (cartPopup.style.display === 'flex') {
-      cartPopup.style.display = 'none';
-    } else {
-      renderCart();
-      cartPopup.style.display = 'flex';
-      cartPopup.focus();
-    }
-  });
-
-  cartIcon.addEventListener('keydown', e => {
-    if(e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      cartIcon.click();
-    }
-  });
-
-  // Render cart contents
-  function renderCart() {
+  function updateCartUI() {
+    cartCount.textContent = cart.length;
     cartItemsContainer.innerHTML = '';
     if (cart.length === 0) {
       cartItemsContainer.textContent = 'Your cart is empty.';
-      cartTotalDisplay.textContent = '';
       checkoutBtn.disabled = true;
-      return;
+    } else {
+      checkoutBtn.disabled = false;
+      cart.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.textContent = item.name;
+        const price = document.createElement('span');
+        price.textContent = `$${item.price}`;
+        div.appendChild(price);
+        cartItemsContainer.appendChild(div);
+      });
     }
-    cart.forEach(item => {
-      const div = document.createElement('div');
-      div.textContent = item.name;
-      const priceSpan = document.createElement('span');
-      priceSpan.textContent = `$${item.price}`;
-      div.appendChild(priceSpan);
-      cartItemsContainer.appendChild(div);
-    });
-    const total = cart.reduce((sum, i) => sum + i.price, 0);
-    cartTotalDisplay.textContent = `Total: $${total}`;
-    checkoutBtn.disabled = false;
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    document.getElementById('cart-total').textContent = `Total: $${total}`;
   }
 
-  // Checkout button
+  cartIcon.addEventListener('click', () => {
+    if (dashboardSection.style.display === 'none') {
+      alert('Please login first.');
+      return;
+    }
+    cartPopup.style.display = cartPopup.style.display === 'flex' ? 'none' : 'flex';
+  });
+
+  // Add to cart buttons
+  const productCards = document.querySelectorAll('.card');
+
+  productCards.forEach(card => {
+    const btn = card.querySelector('.buy-button');
+    if (btn.classList.contains('enabled')) {
+      btn.addEventListener('click', () => {
+        if (dashboardSection.style.display === 'none') {
+          alert('Please login first.');
+          return;
+        }
+        const name = card.getAttribute('data-name');
+        const desc = card.getAttribute('data-desc');
+        const priceText = card.querySelector('h2').textContent;
+        const priceMatch = priceText.match(/\$(\d+)/);
+        const price = priceMatch ? parseInt(priceMatch[1], 10) : 0;
+        cart.push({name, desc, price});
+        updateCartUI();
+      });
+    }
+  });
+
   checkoutBtn.addEventListener('click', () => {
-    // For demo: just show modal confirmation and clear cart
+    if (cart.length === 0) return;
+    cartPopup.style.display = 'none';
     modalOverlay.style.display = 'flex';
   });
 
   modalCloseBtn.addEventListener('click', () => {
     modalOverlay.style.display = 'none';
     cart = [];
-    renderCart();
-    cartPopup.style.display = 'none';
-    updateCartCount();
+    updateCartUI();
   });
 
-  // Update cart count bubble
-  function updateCartCount() {
-    cartCount.textContent = cart.length;
-    if (cart.length === 0) {
-      cartCount.style.display = 'none';
-    } else {
-      cartCount.style.display = 'inline-block';
-    }
-  }
+  // Search filtering
+  const searchBar = document.getElementById('search-bar');
+  searchBar.addEventListener('input', () => {
+    const term = searchBar.value.toLowerCase();
+    productCards.forEach(card => {
+      const name = card.getAttribute('data-name').toLowerCase();
+      const desc = card.getAttribute('data-desc').toLowerCase();
+      if (name.includes(term) || desc.includes(term)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
 
-  // Initial UI state
-  updateCartCount();
-  dashboardSection.style.display = 'none';
-  blurOverlay.style.display = 'flex';
+  // On page load, show login overlay
+  window.onload = () => {
+    setLoggedOut();
+  };
 </script>
-
 </body>
 </html>
