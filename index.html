@@ -29,7 +29,7 @@
     z-index: 1;
     max-width: 980px;
     margin: 0 auto;
-    padding: 30px 20px 80px;
+    padding: 30px 20px 60px;
     transition: filter 0.5s ease;
   }
   header {
@@ -48,6 +48,7 @@
     color: #bbb;
     margin-bottom: 20px;
   }
+  /* Search Bar */
   #search-bar {
     display: block;
     width: 100%;
@@ -65,6 +66,7 @@
   #search-bar::placeholder {
     color: #666;
   }
+  /* Blur overlay for locked view */
   #blur-overlay {
     position: fixed;
     top:0; left:0; right:0; bottom:0;
@@ -116,6 +118,7 @@
     font-weight: 700;
     min-height: 1.2rem;
   }
+  /* Login/Register */
   #dashboard-section {
     max-width: 940px;
     margin: 0 auto 40px;
@@ -124,11 +127,11 @@
     border-radius: 14px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.7);
     display: none;
-    text-align: center;
-    color: #00aaff;
   }
   #dashboard-section h2 {
+    color: #00aaff;
     margin-bottom: 18px;
+    text-align: center;
   }
   #logout-btn {
     display: block;
@@ -146,6 +149,7 @@
   #logout-btn:hover {
     background: #990000;
   }
+  /* Products grid */
   .products {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -216,6 +220,15 @@
     font-size: 1.1rem;
     cursor: not-allowed;
   }
+  .buy-button.enabled {
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  .buy-button.enabled:hover {
+    background: #005fbb;
+  }
+  /* Cart icon */
   #cart-icon {
     position: fixed;
     top: 20px;
@@ -247,6 +260,7 @@
     min-width: 24px;
     text-align: center;
   }
+  /* Cart popup */
   #cart-popup {
     position: fixed;
     top: 60px;
@@ -305,6 +319,7 @@
   #checkout-btn-popup:hover:not(:disabled) {
     background: #005fbb;
   }
+  /* Modal */
   #modal-overlay {
     display:none;
     position:fixed;
@@ -348,9 +363,10 @@
   #modal button:hover {
     background:#008fcc;
   }
+  /* Footer fixed at bottom */
   footer {
     position: fixed;
-    bottom: -60px; /* start hidden below viewport */
+    bottom: 0;
     width: 100%;
     background: #111;
     color: #00aaff;
@@ -360,18 +376,26 @@
     letter-spacing: 1.2px;
     border-top: 2px solid #333;
     z-index: 500;
-    user-select: none;
-    transition: bottom 0.5s ease;
-  }
-  footer.show {
-    bottom: 0; /* slide footer up */
   }
   footer a {
     color: #00aaff;
     text-decoration: underline;
     font-weight: 700;
-    margin-left: 8px;
   }
+  /* Hidden Discord link section below page to force scroll */
+  #discord-link {
+    margin-top: 150vh;
+    text-align: center;
+    padding: 30px 10px;
+    font-size: 1rem;
+    color: #00aaff;
+    user-select: text;
+  }
+  #discord-link a {
+    color: #00aaff;
+    text-decoration: underline;
+  }
+  /* Scrollbars */
   #cart-items::-webkit-scrollbar {
     width: 8px;
   }
@@ -382,6 +406,7 @@
     background: #007bffaa;
     border-radius: 6px;
   }
+  /* Responsive */
   @media (max-width: 480px) {
     header h1 {
       font-size: 2.4rem;
@@ -401,7 +426,7 @@
 
     <header>
       <h1>🛒 CaliSide City RP Store</h1>
-      <p>🔥 All items currently out of stock</p>
+      <p>🔥 One item in stock for testing, others out of stock!</p>
       <input type="search" id="search-bar" placeholder="Search items..." aria-label="Search store items" />
     </header>
 
@@ -415,11 +440,11 @@
     <section class="products" aria-label="Products for sale">
 
       <div class="card" data-name="1,000 Coins" data-desc="Buy big stacks for your grind.">
-        <span class="out-of-stock">Out of Stock</span>
+        <!-- In stock for testing -->
         <img src="https://i.imgur.com/GZNrBbW.png" alt="1,000 Coins" />
         <h2>💰 1,000 Coins – $10</h2>
         <p>Buy big stacks for your grind.</p>
-        <button class="buy-button" disabled>Add to Cart</button>
+        <button class="buy-button enabled">Add to Cart</button>
       </div>
 
       <div class="card" data-name="2,000 Coins" data-desc="Double the fun, double the coins.">
@@ -488,26 +513,34 @@
 
     </section>
 
-    <div id="cart-icon" role="button" aria-label="Open shopping cart" tabindex="0" style="pointer-events:none; opacity: 0.3;">
+    <!-- Cart Icon -->
+    <div id="cart-icon" role="button" aria-label="Open shopping cart" tabindex="0">
       🛒 <span id="cart-count" aria-live="polite" aria-atomic="true">0</span>
     </div>
 
-    <div id="cart-popup" aria-label="Shopping Cart" role="dialog" aria-modal="true" aria-hidden="true">
-      <h3>Your Cart</h3>
+    <!-- Cart Popup -->
+    <section id="cart-popup" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1">
+      <h3 id="cart-title">Your Cart</h3>
       <div id="cart-items" aria-live="polite" aria-atomic="true"></div>
       <div id="cart-total">Total: $0</div>
       <button id="checkout-btn-popup" disabled>Checkout</button>
-    </div>
+    </section>
 
   </div>
 
-  <footer id="footer">
-    CaliSide City RP Store &copy; 2025 — 
-    <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener noreferrer" aria-label="Join our Discord Server">
-      Join our Discord Server!
-    </a>
+  <!-- Footer fixed at bottom -->
+  <footer>
+    CaliSide City RP Store &copy; 2025
   </footer>
 
+  <!-- Hidden Discord link section below page to force scroll -->
+  <section id="discord-link" tabindex="0" aria-label="Discord invite link">
+    <a href="https://discord.gg/YOURDISCORDCODE" target="_blank" rel="noopener noreferrer">
+      Join our Discord Server!
+    </a>
+  </section>
+
+  <!-- Login Overlay -->
   <div id="blur-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title" aria-describedby="login-desc">
     <h2 id="login-title">Please Login</h2>
     <input type="text" id="username" placeholder="Username" aria-label="Username" autocomplete="username" />
@@ -517,6 +550,11 @@
   </div>
 
 <script>
+  // Hardcoded user for demo
+  const validUsers = [
+    { username: 'testuser', password: 'password123' }
+  ];
+
   const blurOverlay = document.getElementById('blur-overlay');
   const loginBtn = document.getElementById('login-btn');
   const usernameInput = document.getElementById('username');
@@ -525,46 +563,50 @@
   const dashboardSection = document.getElementById('dashboard-section');
   const userDisplay = document.getElementById('user-display');
   const logoutBtn = document.getElementById('logout-btn');
+
   const cartIcon = document.getElementById('cart-icon');
   const cartPopup = document.getElementById('cart-popup');
   const cartItemsDiv = document.getElementById('cart-items');
   const cartCount = document.getElementById('cart-count');
   const cartTotal = document.getElementById('cart-total');
   const checkoutBtn = document.getElementById('checkout-btn-popup');
-  const footer = document.getElementById('footer');
 
   let loggedInUser = null;
   let cart = [];
+
+  function showMessage(message) {
+    blurMessage.textContent = message;
+  }
 
   function clearMessage() {
     blurMessage.textContent = '';
   }
 
-  // Login: ANY username & password accepted
+  // Login function
   loginBtn.addEventListener('click', () => {
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
-    if (username && password) {
-      loggedInUser = username;
+    const user = validUsers.find(u => u.username === usernameInput.value.trim() && u.password === passwordInput.value);
+    if (user) {
+      loggedInUser = user.username;
       localStorage.setItem('loggedInUser', loggedInUser);
       blurOverlay.style.display = 'none';
       dashboardSection.style.display = 'block';
       userDisplay.textContent = loggedInUser;
       clearMessage();
-      // Cart disabled since all out of stock
-      cartIcon.style.pointerEvents = 'none';
-      cartIcon.style.opacity = 0.3;
     } else {
-      blurMessage.textContent = 'Please enter username and password';
+      showMessage('Invalid username or password');
     }
   });
 
+  // Allow pressing Enter to login
   [usernameInput, passwordInput].forEach(input => {
     input.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') loginBtn.click();
+      if (e.key === 'Enter') {
+        loginBtn.click();
+      }
     });
   });
 
+  // Logout
   logoutBtn.addEventListener('click', () => {
     loggedInUser = null;
     localStorage.removeItem('loggedInUser');
@@ -573,12 +615,9 @@
     usernameInput.value = '';
     passwordInput.value = '';
     clearMessage();
-    // Reset cart icon disabled state
-    cartIcon.style.pointerEvents = 'none';
-    cartIcon.style.opacity = 0.3;
   });
 
-  // On page load - check stored login
+  // On load, check login
   window.addEventListener('load', () => {
     const storedUser = localStorage.getItem('loggedInUser');
     if (storedUser) {
@@ -586,17 +625,84 @@
       blurOverlay.style.display = 'none';
       dashboardSection.style.display = 'block';
       userDisplay.textContent = loggedInUser;
-      cartIcon.style.pointerEvents = 'none';
-      cartIcon.style.opacity = 0.3;
     } else {
       blurOverlay.style.display = 'flex';
       dashboardSection.style.display = 'none';
-      cartIcon.style.pointerEvents = 'none';
-      cartIcon.style.opacity = 0.3;
     }
   });
 
-  // Search filter works normally (shows/hides cards)
+  // Add to cart
+  function updateCartUI() {
+    cartCount.textContent = cart.length;
+    if (cart.length === 0) {
+      cartPopup.style.display = 'none';
+      checkoutBtn.disabled = true;
+    } else {
+      cartPopup.style.display = 'flex';
+      checkoutBtn.disabled = false;
+    }
+    cartItemsDiv.innerHTML = '';
+    let total = 0;
+    cart.forEach(item => {
+      const itemDiv = document.createElement('div');
+      itemDiv.textContent = `${item.name} - $${item.price}`;
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'X';
+      removeBtn.style.background = 'transparent';
+      removeBtn.style.border = 'none';
+      removeBtn.style.color = '#ff4444';
+      removeBtn.style.fontWeight = '700';
+      removeBtn.style.cursor = 'pointer';
+      removeBtn.setAttribute('aria-label', `Remove ${item.name} from cart`);
+      removeBtn.addEventListener('click', () => {
+        cart = cart.filter(i => i !== item);
+        updateCartUI();
+      });
+      itemDiv.appendChild(removeBtn);
+      cartItemsDiv.appendChild(itemDiv);
+      total += item.price;
+    });
+    cartTotal.textContent = `Total: $${total}`;
+  }
+
+  // Handle Add to Cart buttons
+  document.querySelectorAll('.card').forEach(card => {
+    const btn = card.querySelector('.buy-button');
+    if (btn && btn.classList.contains('enabled')) {
+      btn.addEventListener('click', () => {
+        if (!loggedInUser) {
+          alert('Please login to add items to your cart.');
+          return;
+        }
+        const name = card.getAttribute('data-name');
+        const priceText = card.querySelector('h2').textContent;
+        const priceMatch = priceText.match(/\$(\d+)/);
+        let price = 0;
+        if (priceMatch) price = parseInt(priceMatch[1], 10);
+        cart.push({ name, price });
+        updateCartUI();
+      });
+    }
+  });
+
+  // Toggle cart popup on icon click
+  cartIcon.addEventListener('click', () => {
+    if (cartPopup.style.display === 'flex') {
+      cartPopup.style.display = 'none';
+    } else if (cart.length > 0) {
+      cartPopup.style.display = 'flex';
+    }
+  });
+
+  // Checkout button (demo alert)
+  checkoutBtn.addEventListener('click', () => {
+    alert(`Thanks for your purchase, ${loggedInUser}!`);
+    cart = [];
+    updateCartUI();
+    cartPopup.style.display = 'none';
+  });
+
+  // Search filter
   const searchInput = document.getElementById('search-bar');
   searchInput.addEventListener('input', () => {
     const filter = searchInput.value.toLowerCase();
@@ -611,17 +717,6 @@
     });
   });
 
-  // Footer show/hide on scroll - appear only after user scrolls down 100px
-  let lastScroll = 0;
-  window.addEventListener('scroll', () => {
-    const currentScroll = window.scrollY;
-    if (currentScroll > 100) {
-      footer.classList.add('show');
-    } else {
-      footer.classList.remove('show');
-    }
-    lastScroll = currentScroll;
-  });
 </script>
 </body>
 </html>
