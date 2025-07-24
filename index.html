@@ -19,6 +19,92 @@
       textAlign: 'center',
       padding: '0 20px',
     });
+    loginOverlay.innerHTML = 
+      <h2 style="margin-bottom:20px; font-size:2rem; max-width: 360px;">
+        Login to CaliSide City RP Store 💻<br>
+        <small style="font-weight:400; font-size:1rem; color:#00aaffcc;">
+          Make an account and get into shopping!
+        </small>
+      </h2>
+      <input id="login-username" type="text" placeholder="Username" autocomplete="off" style="padding:10px; font-size:1.2rem; margin-bottom:10px; border-radius:6px; border:none; width: 280px; max-width: 90vw;" />
+      <input id="login-password" type="password" placeholder="Password" autocomplete="off" style="padding:10px; font-size:1.2rem; margin-bottom:10px; border-radius:6px; border:none; width: 280px; max-width: 90vw;" />
+      <button id="login-btn" style="padding:12px 0; width: 280px; max-width: 90vw; font-size:1.2rem; font-weight:700; border:none; border-radius:8px; background:#00aaff; color:#fff; cursor:pointer;">Login / Register</button>
+      <div id="login-error" style="margin-top:12px; color:#ff5555; font-weight:700; min-height:1.2rem;"></div>
+    ;
+    document.body.appendChild(loginOverlay);
+
+    const usernameInput = document.getElementById('login-username');
+    const passwordInput = document.getElementById('login-password');
+    const loginBtn = document.getElementById('login-btn');
+    const loginError = document.getElementById('login-error');
+
+    // Simple users database stored in localStorage
+    const usersKey = 'caliSideUsers';
+    let users = JSON.parse(localStorage.getItem(usersKey)) || {};
+
+    // Check if user is already logged in
+    const loggedUser = localStorage.getItem('caliSideLoggedUser');
+    if(loggedUser && users[loggedUser]) {
+      loginOverlay.style.display = 'none';
+      app.style.filter = 'none';
+      return;
+    }
+
+    // Initially blur the app
+    app.style.filter = 'blur(6px)';
+
+    loginBtn.addEventListener('click', () => {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if(!username || !password) {
+        loginError.textContent = 'Please enter username and password.';
+        return;
+      }
+
+      if(users[username]) {
+        // User exists, check password
+        if(users[username] === password) {
+          // Success login
+          localStorage.setItem('caliSideLoggedUser', username);
+          loginOverlay.style.display = 'none';
+          app.style.filter = 'none';
+          loginError.textContent = '';
+        } else {
+          loginError.textContent = 'Incorrect password.';
+        }
+      } else {
+        // New user, create account
+        users[username] = password;
+        localStorage.setItem(usersKey, JSON.stringify(users));
+        localStorage.setItem('caliSideLoggedUser', username);
+        loginOverlay.style.display = 'none';
+        app.style.filter = 'none';
+        loginError.textContent = '';
+      }
+    });
+  });
+</script> <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Apply blur to whole page except overlay
+    const app = document.getElementById('app') || document.body;
+
+    // Create login overlay
+    const loginOverlay = document.createElement('div');
+    loginOverlay.id = 'login-overlay';
+    Object.assign(loginOverlay.style, {
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      background: 'rgba(0,0,0,0.85)',
+      color: '#00aaff',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 9999,
+      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      textAlign: 'center',
+      padding: '0 20px',
+    });
     loginOverlay.innerHTML = `
       <h2 style="margin-bottom:20px; font-size:2rem; max-width: 360px;">
         Login to CaliSide City RP Store 💻<br>
@@ -849,77 +935,4 @@
   });
 </script>
 </body>
-</html> (() => {
-  const usersKey = 'caliSideUsers';
-  let users = JSON.parse(localStorage.getItem(usersKey)) || {};
-  
-  const loggedUserKey = 'caliSideLoggedUser';
-  
-  const loginOverlay = document.getElementById('blur-overlay') || document.getElementById('login-overlay');
-  const usernameInput = document.getElementById('username-input') || document.getElementById('login-username');
-  const passwordInput = document.getElementById('password-input') || document.getElementById('login-password');
-  const loginBtn = document.getElementById('login-btn');
-  const loginMessage = document.getElementById('blur-message') || document.getElementById('login-error');
-  const app = document.getElementById('app');
-  const dashboard = document.getElementById('dashboard-section');
-  const userDisplay = document.getElementById('user-display');
-
-  const currentUser = localStorage.getItem(loggedUserKey);
-  if (currentUser && users[currentUser]) {
-    if (loginOverlay) loginOverlay.style.display = 'none';
-    if (app) app.style.filter = 'none';
-    if (dashboard) dashboard.style.display = 'block';
-    if (userDisplay) userDisplay.textContent = currentUser;
-  } else {
-    if (loginOverlay) loginOverlay.style.display = 'flex';
-    if (app) app.style.filter = 'blur(6px)';
-    if (dashboard) dashboard.style.display = 'none';
-  }
-
-  if (loginBtn) {
-    loginBtn.addEventListener('click', () => {
-      const username = usernameInput?.value.trim();
-      const password = passwordInput?.value.trim();
-      if (!username || !password) {
-        if (loginMessage) loginMessage.textContent = 'Please enter username and password.';
-        return;
-      }
-
-      if (users[username]) {
-        if (users[username] === password) {
-          localStorage.setItem(loggedUserKey, username);
-          if (loginOverlay) loginOverlay.style.display = 'none';
-          if (app) app.style.filter = 'none';
-          if (dashboard) dashboard.style.display = 'block';
-          if (userDisplay) userDisplay.textContent = username;
-          if (loginMessage) loginMessage.textContent = '';
-        } else {
-          if (loginMessage) loginMessage.textContent = 'Incorrect password.';
-        }
-      } else {
-        users[username] = password;
-        localStorage.setItem(usersKey, JSON.stringify(users));
-        localStorage.setItem(loggedUserKey, username);
-        if (loginOverlay) loginOverlay.style.display = 'none';
-        if (app) app.style.filter = 'none';
-        if (dashboard) dashboard.style.display = 'block';
-        if (userDisplay) userDisplay.textContent = username;
-        if (loginMessage) loginMessage.textContent = '';
-      }
-    });
-  }
-
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem(loggedUserKey);
-      if (loginOverlay) loginOverlay.style.display = 'flex';
-      if (app) app.style.filter = 'blur(6px)';
-      if (dashboard) dashboard.style.display = 'none';
-      if (userDisplay) userDisplay.textContent = '';
-      if (usernameInput) usernameInput.value = '';
-      if (passwordInput) passwordInput.value = '';
-      if (loginMessage) loginMessage.textContent = '';
-    });
-  }
-})();
+</html> 
