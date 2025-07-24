@@ -29,7 +29,7 @@
     z-index: 1;
     max-width: 980px;
     margin: 0 auto;
-    padding: 30px 20px 80px; /* bottom padding for footer */
+    padding: 30px 20px 80px;
     transition: filter 0.5s ease;
   }
   header {
@@ -350,7 +350,7 @@
   }
   footer {
     position: fixed;
-    bottom: 0;
+    bottom: -60px; /* start hidden below viewport */
     width: 100%;
     background: #111;
     color: #00aaff;
@@ -361,6 +361,10 @@
     border-top: 2px solid #333;
     z-index: 500;
     user-select: none;
+    transition: bottom 0.5s ease;
+  }
+  footer.show {
+    bottom: 0; /* slide footer up */
   }
   footer a {
     color: #00aaff;
@@ -488,16 +492,16 @@
       🛒 <span id="cart-count" aria-live="polite" aria-atomic="true">0</span>
     </div>
 
-    <section id="cart-popup" role="dialog" aria-modal="true" aria-labelledby="cart-title" tabindex="-1" style="display:none;">
-      <h3 id="cart-title">Your Cart</h3>
+    <div id="cart-popup" aria-label="Shopping Cart" role="dialog" aria-modal="true" aria-hidden="true">
+      <h3>Your Cart</h3>
       <div id="cart-items" aria-live="polite" aria-atomic="true"></div>
       <div id="cart-total">Total: $0</div>
       <button id="checkout-btn-popup" disabled>Checkout</button>
-    </section>
+    </div>
 
   </div>
 
-  <footer>
+  <footer id="footer">
     CaliSide City RP Store &copy; 2025 — 
     <a href="https://discord.gg/FkqyasFRAs" target="_blank" rel="noopener noreferrer" aria-label="Join our Discord Server">
       Join our Discord Server!
@@ -527,6 +531,7 @@
   const cartCount = document.getElementById('cart-count');
   const cartTotal = document.getElementById('cart-total');
   const checkoutBtn = document.getElementById('checkout-btn-popup');
+  const footer = document.getElementById('footer');
 
   let loggedInUser = null;
   let cart = [];
@@ -591,9 +596,6 @@
     }
   });
 
-  // Cart functionality disabled, no add to cart buttons work since all out of stock
-  // So cart UI does nothing
-
   // Search filter works normally (shows/hides cards)
   const searchInput = document.getElementById('search-bar');
   searchInput.addEventListener('input', () => {
@@ -607,6 +609,18 @@
         card.style.display = 'none';
       }
     });
+  });
+
+  // Footer show/hide on scroll - appear only after user scrolls down 100px
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.scrollY;
+    if (currentScroll > 100) {
+      footer.classList.add('show');
+    } else {
+      footer.classList.remove('show');
+    }
+    lastScroll = currentScroll;
   });
 </script>
 </body>
